@@ -1,0 +1,26 @@
+{
+	"name"        : "d-coder-ui",
+	"authors"     : [ "Vital Radeev" ],
+	"copyright"   : "Copyright © 2021, Vital Radeev",
+	"description" : "D UI",
+	"license"     : "GPL",
+    "dflags"      : [ "-mixin=mixins.d" ],
+    "sourcePaths" : [],
+    "dependencies":
+    {
+        "scriptlike"    : { "path" : "./deps/scriptlike" }
+    },
+    "configurations" :
+    [        
+        {
+            "name"        : "lib",
+            "sourcePaths" : [ "source" ],
+            "targetPath"  : "lib",
+            "targetName"  : "ui",
+            "targetType"  : "library",
+            "platforms"   : ["windows"],
+            "versions"    : [ "DoubleBuffer", "LIB" ],
+            "libs"        : [ "user32", "gdi32" ]
+        }
+    ]
+ }
