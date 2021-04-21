@@ -2,11 +2,22 @@
 
 //import ui : Element;
 import parse.css.number : parse_number;
+import parse.t.tokenize : Tok;
+import std.traits : ReturnType;
+import std.stdio;
+import std.conv : to;
+import std.string : stripRight;
+import std.algorithm : startsWith;
+import std.stdio : writefln;
+import std.stdio : writeln;
 
 
 struct Doc
 {
-    ParsedElement body;
+    ParsedElement head  = { tagName: "head" };
+    ParsedElement meta  = { tagName: "meta" };
+    ParsedElement style = { tagName: "style" };
+    ParsedElement body  = { tagName: "body" };
 }
 
 struct PropRecord
@@ -23,9 +34,12 @@ struct PropList
 
 struct ParsedElement
 {
+    size_t           indentLength;
+    string           tagName;
     string           id;
     string[]         classes;
-    PropList         properties;
+    string[]         setters;
+    //PropList         properties;
     ParsedElement*   parent;
     ParsedElement*[] childs;
 }
@@ -41,29 +55,39 @@ class TParser
         import std.conv   : to;
         import std.string : strip;
 
-        auto file = File( fileName ); // Open for reading
-
-        auto range = file.byLine();
+        auto range = new ByLineIterator( fileName );
 
         string className;
         string[] lines;
 
-        foreach ( lineNo, line; range )
+        foreach ( line; range )
         {
-            parseLine( line, &doc );
+            parseLine( range, line.to!string, &doc );
+        }
+
+        dump( &doc );
+    }
+}
+
+
+void dump( Doc* doc )
+{
+    writeln( "doc: ", doc );
+
+    foreach( element; doc.body.childs )
+    {
+        writeln( "  ", *element );
+
+        foreach( e; element.childs )
+        {
+            writeln( "    ", *e );
         }
     }
 }
 
 
-void parseLine( string line, Doc* doc )
+void parseLine( R )( R range, string line, Doc* doc )
 {
-    import std.meta         : AliasSeq;
-    import std.string       : stripRight;
-    import parse.t.tokenize : tokenize;
-
-    line = line.stripRight();
-
     if ( line.length == 0 )
         return;
     else
@@ -74,41 +98,45 @@ void parseLine( string line, Doc* doc )
 
         size_t indentLength;
 
-        // head, meta, body
+        // head, meta, style, body
         if ( c != ' ' )
         {
-            parseSection( line, 0, doc );
+            parseSection( range, line, 0, doc );
         }
         else
 
         // tag, e, property:value
         {
-            parseKeyword( line, indentLength, &doc );
+            assert( 0, "error: section expected, but got: " ~ line );
         }
     }
 }
 
 
 // body, head, meta
-void parseSection( string s, int indent, Doc* doc )
+void parseSection( R )( R range, string line, size_t indent, Doc* doc )
 {
     import std.range        : front;
     import parse.t.tokenize : tokenize;
     import parse.t.head     : parseSection_head;
     import parse.t.meta     : parseSection_meta;
+    import parse.t.style    : parseSection_style;
     import parse.t.body     : parseSection_body;
 
+    const
     string[] sections = 
     [
         "head",
         "meta",
+        "style",
         "body",
     ];
 
     //
-    auto tokenized = tokenize( line );
+    size_t indentLength;
+    Tok[] tokenized = tokenize( line, &indentLength );
 
-    auto word = tokenized.front;
+    auto word = tokenized.front.s;
 
     //
     static
@@ -116,39 +144,115 @@ void parseSection( string s, int indent, Doc* doc )
     {
         if ( word == SEC )
         {
-            mixin ( "parseSection_" ~ SEC ~ "( range, word, tokenized, parsed );" );
+            mixin ( "parseSection_" ~ SEC ~ "( range, tokenized, indentLength, &doc." ~ SEC ~ " );" );
         }
     }
 }
 
 
-// border: ....
-void parseKeyword( string s, int indent, Doc* doc )
+void attachTo( ParsedElement* newElement, ParsedElement* preElement )
 {
-    import parse.t.tokenize : tokenize;
-    import std.range        : front;
-
-    string[] properties = 
-    [
-        "border",
-    ];
-
-    Tok[] tokized = tokenize( s, indentLength );
-
-    // property
-    static
-    foreach ( PROP; properties )
+    // pre
+    //   new
+    if ( newElement.indentLength > preElement.indentLength )
     {
-        if ( tokenized.front == PROP )
+        preElement.childs ~= newElement;
+        newElement.parent  = preElement;
+    }
+    else
+
+    // pre
+    // new
+    if ( newElement.indentLength == preElement.indentLength )
+    {
+        preElement.parent.childs ~= newElement;
+        newElement.parent         = preElement.parent;
+    }
+    else
+    
+    //   pre
+    // new
+    if ( newElement.indentLength < preElement.indentLength )
+    {
+        // find parent
+        auto parent = preElement.parent;
+        while ( parent !is null )
         {
-            mixin ( "parse_" ~ PROP ~ "( tokenized, parsed );" );
+            if ( newElement.indentLength > parent.indentLength )
+            {
+                break;
+            }
+
+            parent = parent.parent;
+        }
+
+        //
+        if ( parent !is null )
+        {
+            parent.childs ~= newElement;
+            newElement.parent = parent;
+        }
+        else
+        {
+            assert( 0, "error: can not find parent for: " ~ newElement.tagName );
+        }
+    }
+}
+
+
+class ByLineIterator
+{
+    string front;
+    char[] buf;
+    size_t readed;
+    File   _file;
+
+    this( string fileName )
+    {
+        _file = File( fileName );
+        readed = _file.readln( buf );
+
+        if ( readed >= 3 )
+        {
+            // remove ROM
+            if ( buf[0] == 0xEF && buf[1] == 0xBB  && buf[2] == 0xBF )
+            {
+                front = buf[ 3 .. readed ].stripRight.to!string;
+            }
+            else
+
+            // remove ROM
+            if ( buf[0] == 0xFE && buf[1] == 0xFF )
+            {
+                front = buf[ 2 .. readed ].stripRight.to!string;
+            }
+            else
+
+            // remove ROM
+            if ( buf[0] == 0xFF && buf[1] == 0xFE )
+            {
+                front = buf[ 2 .. readed ].stripRight.to!string;
+            }
+            else
+
+            {
+                front = buf[ 0 .. readed ].stripRight.to!string;
+            }
+        }
+        else
+        {
+            front = buf[ 0 .. readed ].stripRight.to!string;
         }
     }
 
-    // tag e
-    if ( tokenized.front == "e" )
+    void popFront()
     {
-        // parse_tag_e( tokenized, parsed );
-    }    
-}
+        readed = _file.readln( buf );
+        front = buf[ 0 .. readed ].stripRight.to!string;
+    }
 
+    bool empty()
+    {
+        return _file.eof();
+    }
+}

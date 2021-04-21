@@ -1,6 +1,6 @@
 module parser;
 
-
+/*
 void parse( string s )
 {
     auto tokens = tokenize( "border-image: url( \"images/b.jpg\" )" );
@@ -14,3 +14,4 @@ void parse( string s )
         parseBorder( tokenized, parsed );
     }
 }
+*/

@@ -24,7 +24,7 @@ struct Tok
 }
 
 
-Tok[] tokenize( string s, ref size_t indentLength )
+Tok[] tokenize( string s, size_t* indentLength )
 {
     // "border: 1px solid #ccc"
     // [ "border", ":", "1px", "solid", "#ccc" ]
@@ -63,26 +63,30 @@ Tok[] tokenize( string s, ref size_t indentLength )
     // 
     if ( !iter.empty )
     {
-        auto c = iter.front[0];
+        auto c = iter.front;
 
         // tag
         if ( c == '.' || c == '#' )
         {
             // update 1st token type
-            tokenized.back[].type = TokType.tag;
+            tokenized.back.type = TokType.tag;
 
             read_class_or_id:
 
-            if ( c == '.' )
             // .class
+            if ( c == '.' )
             {
                 // skip spaces
-                readClass( iter );
+                readClass( iter, tokenized );
 
                 // skip spaces
                 skipSpaces( iter );
                 
-                goto read_class_or_id;  // the last .class will be added to list after the prior .class
+                if ( !iter.empty )
+                {
+                    c = iter.front;
+                    goto read_class_or_id;  // the last .class will be added to list after the prior .class
+                }
             }
             else
 
@@ -90,12 +94,16 @@ Tok[] tokenize( string s, ref size_t indentLength )
             if ( c == '#' )
             {
                 // skip spaces
-                readId( iter );
+                readId( iter, tokenized );
 
                 // skip spaces
                 skipSpaces( iter );
-                
-                goto read_class_or_id;  // the last #id will overwrite the prior #id
+
+                if ( !iter.empty )
+                {
+                    c = iter.front;
+                    goto read_class_or_id;  // the last #id will overwrite the prior #id
+                }
             }
             else
 
@@ -113,7 +121,7 @@ Tok[] tokenize( string s, ref size_t indentLength )
         if ( c == ':' )
         {
             // update 1st token type
-            tokenized.back[].type = TokType.property;
+            tokenized.back.type = TokType.property;
 
             // skip spaces
             skipSpaces( iter );
@@ -128,11 +136,11 @@ Tok[] tokenize( string s, ref size_t indentLength )
 }
 
 
-bool readIndent( StringIterator iter, ref int indentLength )
+bool readIndent( StringIterator iter, size_t* indentLength )
 {
     import std.algorithm : countUntil;
-    indentLength = iter.countUntil!"a != ' '"();
-    return indentLength > 0;
+    *indentLength = iter.countUntil!"a != ' '"();
+    return *indentLength > 0;
 }
 
 
@@ -397,11 +405,14 @@ unittest
 }
 
 
-void main()
-{
-    import std.stdio : writeln;
-    writeln( tokenize( "border: 1px solid #ccc" ) );
-    writeln( tokenize( "border: 1px solid rgb( 255, 255, 255 )" ) );
-    writeln( tokenize( "border-image: url( \"images/b.jpg\" )" ) );
-}
+//void main()
+//{
+//    import std.stdio : writeln;
+    
+//    size_t indentLength;
+
+//    writeln( tokenize( "border: 1px solid #ccc", &indentLength ) );
+//    writeln( tokenize( "border: 1px solid rgb( 255, 255, 255 )", &indentLength ) );
+//    writeln( tokenize( "border-image: url( \"images/b.jpg\" )", &indentLength ) );
+//}
 

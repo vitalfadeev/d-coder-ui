@@ -1,7 +1,9 @@
 ﻿module parse.css.border;
 
+import parse.t.tokenize : Tok;
 
-bool parse_border( string[] tokenized, ref string[] setters )
+
+bool parse_border( Tok[] tokenized, ref string[] setters )
 {
     // https://developer.mozilla.org/ru/docs/Web/CSS/border
 
@@ -26,25 +28,27 @@ bool parse_border( string[] tokenized, ref string[] setters )
 
     import std.range : front;
     import std.range : drop;
+    import std.range : empty;
     import parse.css.border_style;
     import parse.css.line_style;
     import parse.css.line_width;
     import parse.css.color;
     import parse.css.types : LineStyle;
     import parse.css.border_width : parse_border_width;
+    import parse.css.border_color : parse_border_color;
 
-    string[] args = tokenized[ 2 .. $ ]; // skip ["border", ":"]
+    auto args = tokenized[ 2 .. $ ]; // skip ["border", ":"]
 
     // border: args...
     if ( !args.empty )
     {
-        auto word = args.front;
+        auto word = args.front.s;
 
         // border: solid;
         // border: solid #777;
         if ( parse_border_style( word, setters ) ) // this.border_style = LineStyle.solid;
         {
-            auto word2 = args.drop(1).front;
+            auto word2 = args.drop(1).front.s;
             if ( parse_border_color( word2, setters ) )
             {
                 return true;
@@ -76,7 +80,9 @@ bool parse_border( string[] tokenized, ref string[] setters )
     {
         import std.conv : to;
         assert( 0, "error: expect border args: " ~ tokenized.to!string );
-        return false;
+        //return false;
     }
+
+    return false;
 }
 

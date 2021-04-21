@@ -14,18 +14,18 @@ bool parse_line_style( string s, LineStyle* lineStyle )
     // Border border = { { width: 1, type: PenType.solid } };
 
     LineStyle[ string ] lineStyleKeywords =
-    {
-        "none"   = LineStyle.none, 
-        "hidden" = LineStyle.hidden, 
-        "dotted" = LineStyle.dotted, 
-        "dashed" = LineStyle.dashed, 
-        "solid"  = LineStyle.solid, 
-        "double" = LineStyle.double_, 
-        "groove" = LineStyle.groove, 
-        "ridge"  = LineStyle.ridge, 
-        "inset"  = LineStyle.inset, 
-        "outset" = LineStyle.outset
-    };
+    [
+        "none"   : LineStyle.none, 
+        "hidden" : LineStyle.hidden, 
+        "dotted" : LineStyle.dotted, 
+        "dashed" : LineStyle.dashed, 
+        "solid"  : LineStyle.solid, 
+        "double" : LineStyle.double_, 
+        "groove" : LineStyle.groove, 
+        "ridge"  : LineStyle.ridge, 
+        "inset"  : LineStyle.inset, 
+        "outset" : LineStyle.outset
+    ];
 
 
     // style

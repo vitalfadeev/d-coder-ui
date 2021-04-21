@@ -1,18 +1,17 @@
 ﻿module parse.t.body;
 
 import stringiterator   : StringIterator;
+import parse.t.parser   : ParsedElement;
 import parse.t.tokenize : readIndent;
 import parse.t.tokenize : readIndent;
-import parse.t.e        : parseTag_e;
+import parse.t.tokenize : tokenize;
+import parse.t.tokenize : Tok;
+import parse.t.e        : parse_tag_e;
+import std.conv : to;
+import std.stdio : writeln;
 
 
-string[] tags = 
-[ 
-    "e" 
-];
-
-
-void parseSection_body( R )( R range, ref Doc doc )
+void parseSection_body( R )( R range, Tok[] tokenized, size_t indent, ParsedElement* bodyElement )
 {
     // body .className #id
     //   e .className .className #id
@@ -29,59 +28,67 @@ void parseSection_body( R )( R range, ref Doc doc )
     import parse.t.tokenize : TokType;
     import parse.css.border : parse_border;
 
-    string[] bodyProperties = 
-    [
-        "border",
+    const
+    string[] tags = 
+    [ 
+        "e" 
     ];
+
+    // 
+    bodyElement.tagName = "body";
+    bodyElement.indentLength = indent;
 
     size_t indentLength;
 
-    // by line
+    // skip body line
+    range.popFront();
+
+    // lines under body
     foreach ( line; range )
     {
-        line = line.stripRight();
+        tokenized = tokenize( line, &indentLength );
 
-        if ( line.length > 0 )
+        // tag
+        if ( tokenized.front.type == TokType.tag )
+        {
+            static
+            foreach( TAG; tags )
+            {
+                if ( tokenized.front.s == TAG )
+                {
+                    mixin ( "parse_tag_" ~ TAG ~ "( range, tokenized, indentLength, bodyElement );" );
+                }
+            }
+        }
+        else
+
+        // body property
+        if ( tokenized.front.type == TokType.property )
+        {
+            const
+            string[] bodyProperties = 
+            [
+                "border",
+            ];
+
+            auto word = tokenized.front.s;
+
+            static
+            foreach ( PROP; bodyProperties )
+            {
+                if ( word == PROP )
+                {
+                    mixin ( "parse_" ~ PROP ~ "( tokenized, bodyElement.setters );" );
+                }
+            }
+        }
+        else
+
+        // ignore wrong
         {
             //
-            auto tokenized = tokenize( line, indentLength );
-            string[] parsed;
-
-            // body property
-            if ( tokenized.front.type == TokType.property )
-            {
-                static
-                foreach ( PROP; bodyProperties )
-                {
-                    if ( word == PROP )
-                    {
-                        mixin ( "parse_" ~ PROP ~ "( tokenized, parsed );" );
-                        continue;
-                    }
-                }
-            }
-            else
-
-            // tag
-            if ( tokenized.front.type == TokType.tag )
-            {
-                static
-                foreach ( TAG; tags )
-                {
-                    if ( word == TAG )
-                    {
-                        mixin ( "parse_" ~ TAG ~ "( range, word, tokenized, indentLength, parsed );" );
-                        continue;
-                    }
-                }
-            }
-            else
-
-            // ignore wrong
-            {
-                //
-            }
         }
     }
 }
+
 

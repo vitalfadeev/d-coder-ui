@@ -35,6 +35,11 @@ class StringIterator
             front = s.decode( nextPos );
             dcharsReaded++;
         }
+        else
+
+        {
+            front = 0x00;
+        }
     }
 
     bool empty()

@@ -5,13 +5,13 @@
 	"description" : "D UI tool",
 	"license"     : "GPL",
     "dflags"      : [ "-mixin=mixins.d" ],
-    "dependencies":
-    {
-        "d-coder-ui" : { "path" : "./../" }
-    },
     "targetPath"  : "bin",
     "targetName"  : "t-convertor",
     "targetType"  : "executable",
     "versions"    : [ "LIB" ],
-    "libs"        : [ "lib/ui" ]
+    "libs"        : [ "../lib/ui" ],
+    "dependencies":
+    {
+        "d-coder-ui" : { "path" : "../" }
+    },
  }

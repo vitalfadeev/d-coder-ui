@@ -2,6 +2,8 @@ module parse.css.border_width;
 
 import parse.css.types : Length;
 import parse.css.types : LengthUnit;
+import parse.css.types : LineWidthType;
+import stringiterator  : StringIterator;
 import parse.css.line_width;
 
 
@@ -39,8 +41,8 @@ bool parse_border_width( string s, ref string[] setters )
 
     import std.format       : format;
     import std.string       : isNumeric;
-    import parse.css.length : Length;
-    import parse.css.length : LengthUnit;
+    import parse.css.types  : Length;
+    import parse.css.types  : LengthUnit;
     import parse.css.types  : LineWidth;
 
     LineWidth lineWidth;
@@ -51,27 +53,27 @@ bool parse_border_width( string s, ref string[] setters )
         switch ( lineWidth.type )
         {
             case LineWidthType.length:
-                setters ~= format!"borderTopWidth         = %d.%s;"( lineWidth.length, lineWidth.length.unit.stringof );
-                setters ~= format!"borderRightWidth       = %d.%s;"( lineWidth.length, lineWidth.length.unit.stringof );
-                setters ~= format!"borderBottomWidth      = %d.%s;"( lineWidth.length, lineWidth.length.unit.stringof );
-                setters ~= format!"borderLeftWidth        = %d.%s;"( lineWidth.length, lineWidth.length.unit.stringof );
-                setters ~= format!"borderTopLeftWidth     = %d.%s;"( lineWidth.length, lineWidth.length.unit.stringof );
-                setters ~= format!"borderTopRightWidth    = %d.%s;"( lineWidth.length, lineWidth.length.unit.stringof );
-                setters ~= format!"borderBottomLeftWidth  = %d.%s;"( lineWidth.length, lineWidth.length.unit.stringof );
-                setters ~= format!"borderBottomRightWidth = %d.%s;"( lineWidth.length, lineWidth.length.unit.stringof );
+                setters ~= format!"borderTopWidth         = (%f).(%s);"( lineWidth.length.length, lineWidth.length.unit.stringof );
+                setters ~= format!"borderRightWidth       = (%f).(%s);"( lineWidth.length.length, lineWidth.length.unit.stringof );
+                setters ~= format!"borderBottomWidth      = (%f).(%s);"( lineWidth.length.length, lineWidth.length.unit.stringof );
+                setters ~= format!"borderLeftWidth        = (%f).(%s);"( lineWidth.length.length, lineWidth.length.unit.stringof );
+                setters ~= format!"borderTopLeftWidth     = (%f).(%s);"( lineWidth.length.length, lineWidth.length.unit.stringof );
+                setters ~= format!"borderTopRightWidth    = (%f).(%s);"( lineWidth.length.length, lineWidth.length.unit.stringof );
+                setters ~= format!"borderBottomLeftWidth  = (%f).(%s);"( lineWidth.length.length, lineWidth.length.unit.stringof );
+                setters ~= format!"borderBottomRightWidth = (%f).(%s);"( lineWidth.length.length, lineWidth.length.unit.stringof );
                 break;
 
             case LineWidthType.thin:
             case LineWidthType.medium:
             case LineWidthType.thick:
-                setters ~= format!"borderTopWidth         = %d.px;"( lineWidth.type, lineWidth.length.unit.stringof );
-                setters ~= format!"borderRightWidth       = %d.px;"( lineWidth.type, lineWidth.length.unit.stringof );
-                setters ~= format!"borderBottomWidth      = %d.px;"( lineWidth.type, lineWidth.length.unit.stringof );
-                setters ~= format!"borderLeftWidth        = %d.px;"( lineWidth.type, lineWidth.length.unit.stringof );
-                setters ~= format!"borderTopLeftWidth     = %d.px;"( lineWidth.type, lineWidth.length.unit.stringof );
-                setters ~= format!"borderTopRightWidth    = %d.px;"( lineWidth.type, lineWidth.length.unit.stringof );
-                setters ~= format!"borderBottomLeftWidth  = %d.px;"( lineWidth.type, lineWidth.length.unit.stringof );
-                setters ~= format!"borderBottomRightWidth = %d.px;"( lineWidth.type, lineWidth.length.unit.stringof );
+                setters ~= format!"borderTopWidth         = (%d).px;"( lineWidth.type );
+                setters ~= format!"borderRightWidth       = (%d).px;"( lineWidth.type );
+                setters ~= format!"borderBottomWidth      = (%d).px;"( lineWidth.type );
+                setters ~= format!"borderLeftWidth        = (%d).px;"( lineWidth.type );
+                setters ~= format!"borderTopLeftWidth     = (%d).px;"( lineWidth.type );
+                setters ~= format!"borderTopRightWidth    = (%d).px;"( lineWidth.type );
+                setters ~= format!"borderBottomLeftWidth  = (%d).px;"( lineWidth.type );
+                setters ~= format!"borderBottomRightWidth = (%d).px;"( lineWidth.type );
                 break;
 
             case LineWidthType.inherit:
@@ -80,4 +82,6 @@ bool parse_border_width( string s, ref string[] setters )
 
         return true;
     }
+
+    return false;
 }

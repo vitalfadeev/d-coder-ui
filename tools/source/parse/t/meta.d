@@ -1,10 +1,14 @@
 module parse.t.meta;
 
+import parse.t.tokenize : Tok;
+import parse.t.parser : ParsedElement;
 
-void parseSection_meta( R )( R range, string word, string[] tokenized, ref Parsed parsed )
+
+void parseSection_meta( R )( R range, Tok[] tokenized, size_t indent, ParsedElement* bodyElement )
 {
     import std.string : stripRight;
 
+    const
     string[] properties = 
     [
         "width",
@@ -13,37 +17,5 @@ void parseSection_meta( R )( R range, string word, string[] tokenized, ref Parse
         "show",
     ];
 
-    int indentLength;
-    string word;
-
-    //
-    foreach ( line; range )
-    {
-        line = line.stripRight();
-
-        if ( line.length > 0 )
-        {
-            parseIndent( line, &indentLength );
-
-            if ( indentLength == 0 )
-            {
-                return;
-            }
-
-            auto tokenized = tokenize( line );
-            word = tokenized[0];
-
-            //
-            static
-            foreach ( PROP; properties )
-            {
-                if ( word == PROP )
-                {
-                    mixin ( "parseMetaProperty_" ~ PROP ~ "( range, word, tokenized, parsed );" );
-                    continue;
-                }
-            }
-        }
-    }
 }
 

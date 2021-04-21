@@ -5,12 +5,18 @@ import parse.css.types;
 import stringiterator;
 
 
-LineWidthType[ string ] types =
+LineWidthType[ string ] types;
+
+static 
+this()
 {
-    "thin"   = LineWidthType.thin,
-    "medium" = LineWidthType.medium,
-    "thick"  = LineWidthType.thick
-};
+    types =
+    [
+        "thin"   : LineWidthType.thin,
+        "medium" : LineWidthType.medium,
+        "thick"  : LineWidthType.thick
+    ];
+}
 
 
 bool parse_line_width( StringIterator range, LineWidth* lw )
@@ -24,7 +30,7 @@ bool parse_line_width( StringIterator range, LineWidth* lw )
     // length
     if ( range.front.isNumber() )
     {
-        return parse_length( s, &lw.length );
+        return parse_length( range, &lw.length );
     }
     else
 
@@ -34,7 +40,7 @@ bool parse_line_width( StringIterator range, LineWidth* lw )
 
         if ( auto type = word in types )
         {
-            lw.type = type;
+            lw.type = *type;
             return true;
         }
         else
@@ -43,6 +49,4 @@ bool parse_line_width( StringIterator range, LineWidth* lw )
             // return false;
         }
     }
-
-    return false;
 }

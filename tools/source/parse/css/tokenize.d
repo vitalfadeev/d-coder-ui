@@ -21,7 +21,7 @@ string[] tokenize( string s )
     auto iter = new StringIterator( s, 0 );
 
     // indent
-    int indentLength;
+    size_t indentLength;
     readIndent( iter, indentLength );
 
     // keyword
@@ -44,7 +44,7 @@ string[] tokenize( string s )
 }
 
 
-bool readIndent( StringIterator iter, ref int indentLength )
+bool readIndent( StringIterator iter, ref size_t indentLength )
 {
     import std.algorithm : countUntil;
     indentLength = iter.countUntil!"a != ' '"();
@@ -245,11 +245,11 @@ unittest
 }
 
 
-void main()
-{
-    import std.stdio : writeln;
-    writeln( tokenize( "border: 1px solid #ccc" ) );
-    writeln( tokenize( "border: 1px solid rgb( 255, 255, 255 )" ) );
-    writeln( tokenize( "border-image: url( \"images/b.jpg\" )" ) );
-}
+//void main()
+//{
+//    import std.stdio : writeln;
+//    writeln( tokenize( "border: 1px solid #ccc" ) );
+//    writeln( tokenize( "border: 1px solid rgb( 255, 255, 255 )" ) );
+//    writeln( tokenize( "border-image: url( \"images/b.jpg\" )" ) );
+//}
 
