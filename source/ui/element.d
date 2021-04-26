@@ -10,6 +10,9 @@ import ui.base : memberId;
 
 struct Element
 {
+    string tagName;
+    string id;
+
     // Node properties
     Element* parentNode;
     Element* prevSibling;

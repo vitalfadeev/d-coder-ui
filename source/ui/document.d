@@ -22,7 +22,7 @@ struct Document
     DocumentHead head;
     Element      body;
 
-    Element* createElement()
+    Element* createElement( string tagName )
     {
         Element* element = new Element();
         return element;

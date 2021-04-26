@@ -9,9 +9,11 @@ import parse.t.tokenize : Tok;
 import parse.t.e        : parse_tag_e;
 import std.conv : to;
 import std.stdio : writeln;
+import parse.t.parser : Doc;
+import std.range : popFront;
 
 
-void parseSection_body( R )( R range, Tok[] tokenized, size_t indent, ParsedElement* bodyElement )
+void parseSection_body( R )( R range, Tok[] tokenized, size_t indent, Doc* doc )
 {
     // body .className #id
     //   e .className .className #id
@@ -33,6 +35,8 @@ void parseSection_body( R )( R range, Tok[] tokenized, size_t indent, ParsedElem
     [ 
         "e" 
     ];
+
+    auto bodyElement = &doc.body;
 
     // 
     bodyElement.tagName = "body";

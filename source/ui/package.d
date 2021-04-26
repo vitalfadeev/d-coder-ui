@@ -25,14 +25,15 @@ public import ui.color   : rgb;
 //public import ui.vidpipe : touch;
 
 // Structs
-public import ui.rect    : Rect;
-public import ui.size    : Size;
-public import ui.color   : Color;
-public import ui.text    : TextSet;
-public import ui.point   : Point;
-public import ui.font    : Font;
-public import ui.base    : Pen;
-public import ui.base    : PenType;
+public import ui.rect     : Rect;
+public import ui.size     : Size;
+public import ui.color    : Color;
+public import ui.text     : TextSet;
+public import ui.point    : Point;
+public import ui.font     : Font;
+public import ui.base     : Pen;
+public import ui.base     : PenType;
+public import ui.document : Document;
 
 // Class
 public import ui.classregistry  : Class;

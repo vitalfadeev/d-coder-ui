@@ -9,6 +9,7 @@ import std.conv : to;
 import parse.t.tokenize : TokType;
 import parse.css.border : parse_border;
 import std.stdio : writeln;
+import std.range : popFront;
 
 
 void parse_tag_e( R )( R range, Tok[] tokenized, size_t indent, ParsedElement* parentElement )

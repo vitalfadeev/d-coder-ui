@@ -68,3 +68,23 @@ parse_line_width ( in: string, out Width( Length ) )
 parse_length ( in: string, out Length( float, Unit ) )
 
 
+//
+deps/
+  d-coder-ui/
+generated/
+  classes.d
+  tree.d
+source/
+  app.d
+app.t
+
+app.d
+-----
+import ui;
+import generated;
+
+void main()
+{
+    initUI();
+}
+

@@ -1,5 +1,9 @@
 import std.stdio;
 import parse.t.parser : Doc;
+import std.stdio : File;
+import std.file : exists;
+import std.file : mkdir;
+import std.path : buildPath;
 
 // create .def
 // dub build
@@ -46,40 +50,68 @@ void generate_d( Doc* doc )
 
     string s;
 
-    s ~= "import ui.element : Element;\n";
+    s ~= "module generated.tree;\n";
     s ~= "\n";
 
-    s ~= "Element* element;\n";
-    s ~= "Element* parentElement;\n";
+    s ~= "import ui;\n";
     s ~= "\n";
 
-    s ~= "// body \n";
-    s ~= "document.body.clsses = doc.body.classes;\n";
-    s ~= "document.body.id     = doc.body.id;\n";
+    s ~= "void initUI()\n";
+    s ~= "{\n";
+    s ~= "  Document document;\n";
     s ~= "\n";
+    s ~= "  Element* element;\n";
+    s ~= "  Element* parentElement;\n";
+    s ~= "  \n";
+
+    s ~= "  // body \n";
+    if ( doc.body.id.length > 0 )
+    s ~= format!"  document.body.id      = %s;\n"( doc.body.id.quote() );
+    foreach ( className; doc.body.classes )
+    s ~= format!"  document.body.addClass!%s;\n"(  className );
+    s ~= "  \n";
 
     foreach( element; doc.body.childs )
     {
-        s ~=        "  // body's element\n";
-        s ~= format!"  element = document.createElement( %s );\n"( element.tagName.quote() );
-        s ~= format!"  element.id      = %s;\n"( element.id.quote() );
-        s ~= format!"  element.classes = %s;\n"( element.classes.to!string );
-        s ~=        "  document.body.appendChilds( element );\n";
-        s ~=        "  parentElement = element;\n";
-        s ~=        "  \n";
+        s ~= format!"    // %s\n"( element.tagName );
+        s ~= format!"    element = document.createElement( %s );\n"( element.tagName.quote() );
+        if ( element.id.length > 0 )
+        s ~= format!"    element.id      = %s;\n"( element.id.quote() );
+        foreach ( className; element.classes )
+        s ~= format!"    element.addClass!%s;\n"(  className );
+        s ~=        "    document.body.appendChilds( element );\n";
+        s ~=        "    \n";
+
+        if ( element.childs.length > 0 )
+        s ~=        "    parentElement = element;\n";
+        s ~=        "    \n";
 
         foreach( e; element.childs )
         {
-            s ~=        "    // element\n";
-            s ~= format!"    element = document.createElement( %s );\n"( e.tagName.quote() );
-            s ~= format!"    element.id      = %s;\n"( e.id.quote() );
-            s ~= format!"    element.classes = %s;\n"( e.classes.to!string );
-            s ~=        "    parentElement.appendChilds( element );\n";
-            s ~=        "    \n";
+            s ~= format!"      // %s\n"( e.tagName );
+            s ~= format!"      element = document.createElement( %s );\n"( e.tagName.quote() );
+            if ( e.id.length > 0 )
+            s ~= format!"      element.id      = %s;\n"( e.id.quote() );
+            foreach ( className; element.classes )
+            s ~= format!"      element.addClass!%s;\n"(  className );
+            s ~=        "      parentElement.appendChilds( element );\n";
+            s ~=        "      \n";
         }
     }
 
+    s ~= "}\n";
+
     writeln( s );
+
+    // save file
+    if ( !exists( buildPath( "source", "generated" ) ) )
+    {
+        mkdir( buildPath( "source", "generated" ) );
+    }
+
+    auto f = File( buildPath( "source", "generated", "tree.d" ), "w" );
+    f.write( s );
+    f.close();
 }
 
 

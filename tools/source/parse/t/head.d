@@ -5,7 +5,7 @@ import parse.t.tokenize : Tok;
 import parse.t.parser : ParsedElement;
 
 
-void parseSection_head( R )( R range, Tok[] tokenized, size_t indent, ParsedElement* headElement )
+void parseSection_head( R )( R range, Tok[] tokenized, size_t indent, Doc* doc )
 {
     import std.string : stripRight;
 

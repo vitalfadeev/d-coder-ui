@@ -129,7 +129,6 @@ Tok[] tokenize( string s, size_t* indentLength )
             // ...
             readKeywordArgs( iter, tokenized );
         }
-
     }
 
     return tokenized;
@@ -229,6 +228,7 @@ bool readColon( StringIterator iter, ref Tok[] tokenized )
     {
         if ( c == ':' )
         {
+            iter.popFront();
             break;
         }
     }

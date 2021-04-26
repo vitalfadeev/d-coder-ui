@@ -5,6 +5,7 @@ module parse.css.line_style;
 // https://developer.mozilla.org/en-US/docs/Web/CSS/border-style
 
 import parse.css.types;
+import std.stdio : writeln;
 
 
 bool parse_line_style( string s, LineStyle* lineStyle )
@@ -38,8 +39,9 @@ bool parse_line_style( string s, LineStyle* lineStyle )
 
     // wrong style
     {
-        assert( 0, "error: wrong line style: " ~ s );
-        //return false;
+        //assert( 0, "error: wrong line style: " ~ s );
+        writeln( __FUNCTION__, ": error: wrong line style: " ~ s );
+        return false;
     }
 }
 

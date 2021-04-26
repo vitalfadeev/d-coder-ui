@@ -1,6 +1,7 @@
 ﻿module parse.css.border;
 
 import parse.t.tokenize : Tok;
+import std.stdio : writeln;
 
 
 bool parse_border( Tok[] tokenized, ref string[] setters )
@@ -38,6 +39,8 @@ bool parse_border( Tok[] tokenized, ref string[] setters )
     import parse.css.border_color : parse_border_color;
 
     auto args = tokenized[ 2 .. $ ]; // skip ["border", ":"]
+
+    writeln( args );
 
     // border: args...
     if ( !args.empty )
