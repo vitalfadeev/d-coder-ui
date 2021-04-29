@@ -69,13 +69,11 @@ struct Element
 
     void vid( IDrawer drawer )
     {
-        // pen
-        // pen.lineTo()
-        // pen.rect()
-        // pen.text()
         vid_center( drawer );
         vid_border( drawer );
-        //vid_symbol( ras );
+        drawer.color( 0xCCCCCC.rgb );
+        drawer.moveTo( 0, 0 );
+        drawer.lineTo( 100, 100 );
     }
 
 
@@ -286,6 +284,11 @@ struct Element
         }
 
     }
+
+    //void borderTopWidth( T )( T a )
+    //{
+    //    props.borderTopWidth = a;
+    //}
 
 
     // Node

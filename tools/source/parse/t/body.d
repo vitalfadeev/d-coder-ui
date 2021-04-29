@@ -13,7 +13,7 @@ import parse.t.parser : Doc;
 import std.range : popFront;
 
 
-void parseSection_body( R )( R range, Tok[] tokenized, size_t indent, Doc* doc )
+void parseSection_body( R )( ref R range, Tok[] tokenized, size_t indent, Doc* doc )
 {
     // body .className #id
     //   e .className .className #id
@@ -27,6 +27,7 @@ void parseSection_body( R )( R range, Tok[] tokenized, size_t indent, Doc* doc )
     //     ParsedElement
     import std.string       : stripRight;
     import std.range        : front;
+    import std.range        : empty;
     import parse.t.tokenize : TokType;
     import parse.css.border : parse_border;
 
@@ -48,9 +49,12 @@ void parseSection_body( R )( R range, Tok[] tokenized, size_t indent, Doc* doc )
     range.popFront();
 
     // lines under body
-    foreach ( line; range )
+    if ( !range.empty )
+    for ( string line; !range.empty; range.popFront() )
     {
-        tokenized = tokenize( line, &indentLength );
+        line = range.front;
+
+        tokenized = tokenize( line.stripRight, &indentLength );
 
         // tag
         if ( tokenized.front.type == TokType.tag )
@@ -92,7 +96,11 @@ void parseSection_body( R )( R range, Tok[] tokenized, size_t indent, Doc* doc )
         {
             //
         }
+
+        if ( range.empty )
+        {
+            break;
+        }
     }
 }
-
 

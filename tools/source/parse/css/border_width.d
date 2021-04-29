@@ -49,18 +49,21 @@ bool parse_border_width( string s, ref string[] setters )
 
     if ( parse_line_width( new StringIterator( s ), &lineWidth ) )
     {
+        import std.stdio : writeln;
+        writeln( "lineWidth: ", lineWidth );
+
         final
         switch ( lineWidth.type )
         {
             case LineWidthType.length:
-                setters ~= format!"borderTopWidth         = (%f).(%s);"( lineWidth.length.length, lineWidth.length.unit.stringof );
-                setters ~= format!"borderRightWidth       = (%f).(%s);"( lineWidth.length.length, lineWidth.length.unit.stringof );
-                setters ~= format!"borderBottomWidth      = (%f).(%s);"( lineWidth.length.length, lineWidth.length.unit.stringof );
-                setters ~= format!"borderLeftWidth        = (%f).(%s);"( lineWidth.length.length, lineWidth.length.unit.stringof );
-                setters ~= format!"borderTopLeftWidth     = (%f).(%s);"( lineWidth.length.length, lineWidth.length.unit.stringof );
-                setters ~= format!"borderTopRightWidth    = (%f).(%s);"( lineWidth.length.length, lineWidth.length.unit.stringof );
-                setters ~= format!"borderBottomLeftWidth  = (%f).(%s);"( lineWidth.length.length, lineWidth.length.unit.stringof );
-                setters ~= format!"borderBottomRightWidth = (%f).(%s);"( lineWidth.length.length, lineWidth.length.unit.stringof );
+                setters ~= format!"borderTopWidth         = (%f).%s;"( lineWidth.length.length, lineWidth.length.unit );
+                setters ~= format!"borderRightWidth       = (%f).%s;"( lineWidth.length.length, lineWidth.length.unit );
+                setters ~= format!"borderBottomWidth      = (%f).%s;"( lineWidth.length.length, lineWidth.length.unit );
+                setters ~= format!"borderLeftWidth        = (%f).%s;"( lineWidth.length.length, lineWidth.length.unit );
+                setters ~= format!"borderTopLeftWidth     = (%f).%s;"( lineWidth.length.length, lineWidth.length.unit );
+                setters ~= format!"borderTopRightWidth    = (%f).%s;"( lineWidth.length.length, lineWidth.length.unit );
+                setters ~= format!"borderBottomLeftWidth  = (%f).%s;"( lineWidth.length.length, lineWidth.length.unit );
+                setters ~= format!"borderBottomRightWidth = (%f).%s;"( lineWidth.length.length, lineWidth.length.unit );
                 break;
 
             case LineWidthType.thin:

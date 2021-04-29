@@ -1,6 +1,9 @@
 module parse.t.tokenize;
 
 import stringiterator : StringIterator;
+import parse.t.charreader : CharReader;
+import std.string : startsWith;
+import std.stdio : writeln;
 
 
 enum TokType
@@ -48,86 +51,59 @@ Tok[] tokenize( string s, size_t* indentLength )
 
     import std.range : back;
 
-    auto iter = new StringIterator( s, 0 );
+    Tok[] tokenized;
+
+    auto reader = CharReader( s );
 
     // indent
-    readIndent( iter, indentLength );
+    readIndent( reader, indentLength );
 
     // keyword
-    Tok[] tokenized;
-    readKeyword( iter, tokenized );
+    readKeyword( reader, tokenized );
 
     // skip spaces
-    skipSpaces( iter );
+    skipSpaces( reader );
 
-    // 
-    if ( !iter.empty )
+    // tag or property
+    if ( !reader.empty )
     {
-        auto c = iter.front;
+        auto c = reader.front;
 
-        // tag
-        if ( c == '.' || c == '#' )
-        {
-            // update 1st token type
-            tokenized.back.type = TokType.tag;
-
-            read_class_or_id:
-
-            // .class
-            if ( c == '.' )
-            {
-                // skip spaces
-                readClass( iter, tokenized );
-
-                // skip spaces
-                skipSpaces( iter );
-                
-                if ( !iter.empty )
-                {
-                    c = iter.front;
-                    goto read_class_or_id;  // the last .class will be added to list after the prior .class
-                }
-            }
-            else
-
-            // #id
-            if ( c == '#' )
-            {
-                // skip spaces
-                readId( iter, tokenized );
-
-                // skip spaces
-                skipSpaces( iter );
-
-                if ( !iter.empty )
-                {
-                    c = iter.front;
-                    goto read_class_or_id;  // the last #id will overwrite the prior #id
-                }
-            }
-            else
-
-            {
-                // no more variants. ignore some wrong
-                skipWordToSpaces( iter );
-
-                // skip spaces
-                skipSpaces( iter );                
-            }
-        }
-        else
-
-        // keyword: args
-        if ( c == ':' )
+        // property. format is: "keyword: args"
+        if ( c.startsWith( ":" ) )
         {
             // update 1st token type
             tokenized.back.type = TokType.property;
 
+            // :
+            readColon( reader, tokenized );
+
             // skip spaces
-            skipSpaces( iter );
+            skipSpaces( reader );
 
             // ...
-            readKeywordArgs( iter, tokenized );
+            readKeywordArgs( reader, tokenized );
+        }
+        else
+
+        // tag. format is: "e class class"
+        {
+            // update 1st token type
+            tokenized.back.type = TokType.tag;
+
+            read_class:
+
+            // class
+            readClass( reader, tokenized );
+
+            // skip spaces
+            skipSpaces( reader );
+            
+            if ( !reader.empty )
+            {
+                c = reader.front;
+                goto read_class;  // the last .class will be added to list after the prior .class
+            }
         }
     }
 
@@ -135,36 +111,63 @@ Tok[] tokenize( string s, size_t* indentLength )
 }
 
 
-bool readIndent( StringIterator iter, size_t* indentLength )
+bool readIndent( ref CharReader reader, size_t* indentLength )
 {
-    import std.algorithm : countUntil;
-    *indentLength = iter.countUntil!"a != ' '"();
+    auto startState = reader.getState();
+
+    for ( string s; !reader.empty; reader.popFront() )
+    {
+        s = reader.front;
+
+        if ( isWhite( s ) )
+        {
+            //
+        }
+        else
+
+        {
+            break;
+        }
+    }
+
+    *indentLength = reader - startState; // size_t
+
     return *indentLength > 0;
 }
 
 
-bool readKeyword( StringIterator iter, ref Tok[] tokenized )
+bool isWhite( string s )
 {
-    size_t startPos = iter.pos;
+    import std.string : startsWith;
+    return s.startsWith( " " );
+}
 
-    foreach ( c; iter )
+
+bool readKeyword( ref CharReader reader, ref Tok[] tokenized )
+{
+    auto startState = reader.getState();
+
+    for ( string s; !reader.empty; reader.popFront() )
     {
-        if ( c == ' ' )
+        s = reader.front;
+
+        if ( isWhite( s ) )
         {
             break;
         }
         else
 
-        if ( c == ':' )
+        if ( s.startsWith( ":" ) )
         {
             break;
         }
     }
 
+
     //
-    if ( startPos < iter.pos )
+    if ( reader != startState )
     {
-        tokenized ~= Tok( TokType.keyword, iter.s[ startPos .. iter.pos ], 0, startPos );
+        tokenized ~= Tok( TokType.keyword, reader.readedOf( startState ), 0, startState.pos );
         return true;
     }
     else
@@ -174,27 +177,24 @@ bool readKeyword( StringIterator iter, ref Tok[] tokenized )
 }
 
 
-bool readClass( StringIterator iter, ref Tok[] tokenized )
+bool readClass( ref CharReader reader, ref Tok[] tokenized )
 {
-    size_t dotPos = iter.pos;
+    auto startState = reader.getState();
 
-    // skip '.'
-    iter.popFront();
-
-    size_t startPos = iter.pos;
-
-    foreach ( c; iter )
+    for ( string s; !reader.empty; reader.popFront() )
     {
-        if ( c == ' ' )
+        s = reader.front;
+
+        if ( isWhite( s ) )
         {
             break;
         }
     }
 
     //
-    if ( startPos < iter.pos )
+    if ( reader != startState )
     {
-        tokenized ~= Tok( TokType.className, iter.s[ startPos .. iter.pos ], 0, startPos );
+        tokenized ~= Tok( TokType.className, reader.readedOf( startState ), 0, startState.pos );
         return true;
     }
     else
@@ -204,136 +204,166 @@ bool readClass( StringIterator iter, ref Tok[] tokenized )
 }
 
 
-bool skipSpaces( StringIterator iter )
+bool skipSpaces( ref CharReader reader )
 {
-    import std.algorithm : countUntil;
-    auto spacesCount = iter.countUntil!"a != ' '"();
-    return spacesCount > 0;
-}
+    auto startState = reader.getState();
 
-
-bool skipWordToSpaces( StringIterator iter )
-{
-    import std.algorithm : countUntil;
-    auto charsCount = iter.countUntil!"a == ' '"();
-    return charsCount > 0;
-}
-
-
-bool readColon( StringIterator iter, ref Tok[] tokenized )
-{
-    size_t startPos = iter.pos;
-
-    foreach ( c; iter )
+    for ( string s; !reader.empty; reader.popFront() )
     {
-        if ( c == ':' )
+        s = reader.front;
+
+        if ( isWhite( s ) )
         {
-            iter.popFront();
-            break;
-        }
-    }
-
-    //
-    if ( startPos < iter.pos )
-    {
-        tokenized ~= Tok( TokType.colon, iter.s[ startPos .. iter.pos ], 0, startPos );
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-
-bool readKeywordArgs( StringIterator iter, ref Tok[] tokenized )
-{
-    size_t startPos = iter.pos;
-    size_t argPos   = iter.pos;
-
-    foreach ( c; iter )
-    {
-        if ( c == ' ' )
-        {
-            tokenized ~= Tok( TokType.propertyArg, iter.s[ argPos .. iter.pos ], 0, argPos );
-            skipSpaces( iter );
-            argPos = iter.pos;
+            //
         }
         else
 
-        if ( c == '(' )
         {
-            if ( readRoundBrackets( iter ) )
+            break;
+        }
+    }
+
+    auto spaces = reader - startState; // size_t
+
+    return spaces > 0;
+}
+
+
+bool skipWordToSpaces( ref CharReader reader )
+{
+    auto startState = reader.getState();
+
+    for ( string s; !reader.empty; reader.popFront() )
+    {
+        s = reader.front;
+
+        if ( isWhite( s ) )
+        {
+            break;
+        }
+    }
+
+    auto spaces = reader - startState; // size_t
+
+    return spaces > 0;
+}
+
+
+bool readColon( ref CharReader reader, ref Tok[] tokenized )
+{
+    auto startState = reader.getState();
+
+    if ( !reader.empty )
+    if ( reader.front.startsWith( ":" ) )
+    {
+        reader.popFront();
+    }
+
+    //
+    if ( reader != startState )
+    {
+        tokenized ~= Tok( TokType.colon, reader.readedOf( startState ), 0, startState.pos );
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+
+bool readKeywordArgs( ref CharReader reader, ref Tok[] tokenized )
+{
+    auto startState = reader.getState();
+    auto argState   = reader.getState();
+
+    for ( string s; !reader.empty; reader.popFront() )
+    {
+        s = reader.front;
+
+        if ( isWhite( s ) )
+        {
+            tokenized ~= Tok( TokType.propertyArg, reader.readedOf( argState ), 0, startState.pos );
+            skipSpaces( reader );
+            argState = reader.getState();
+        }
+        else
+
+        if ( s.startsWith( "(" ) )
+        {
+            if ( readRoundBrackets( reader ) )
             {
-                tokenized ~= Tok( TokType.propertyArg, iter.s[ argPos .. iter.pos ], 0, argPos );
-                argPos = iter.pos;
+                tokenized ~= Tok( TokType.propertyArg, reader.readedOf( argState ), 0, startState.pos );
+                argState = reader.getState();
             }
             else
             {
-                assert( 0, "error: got '(', but not got ')'" ~ iter.s[ argPos .. $ ] );
+                assert( 0, "error: got '(', but not got ')'" ~ argState.s );
             }
         }
         else
 
-        if ( c == '"' )
+        if ( s.startsWith( "\"" ) )
         {
-            if ( readDoubleQuoted( iter ) )
+            if ( readDoubleQuoted( reader ) )
             {
-                tokenized ~= Tok( TokType.propertyArg, iter.s[ argPos .. iter.pos ], 0, argPos );
-                argPos = iter.pos;
+                tokenized ~= Tok( TokType.propertyArg, reader.readedOf( argState ), 0, startState.pos );
+                argState = reader.getState();
             }
             else
             {
-                assert( 0, "error: got '\"', but not got '\"'" ~ iter.s[ argPos .. $ ] );
+                assert( 0, "error: got '\"', but not got '\"'" ~ argState.s );
             }
         }
     }
 
     // to EOF
-    if ( argPos < iter.pos )
+    if ( reader != argState )
     {
-        tokenized ~= Tok( TokType.propertyArg, iter.s[ argPos .. iter.pos ], 0, argPos );
+        tokenized ~= Tok( TokType.propertyArg, reader.readedOf( argState ), 0, argState.pos );
     }
 
     return true;
 }
 
 
-bool readRoundBrackets( StringIterator iter )
+bool readRoundBrackets( ref CharReader reader )
 {
-    size_t startPos = iter.pos;
+    auto startState = reader.getState();
 
     int opened = 0;
     int closed = 0;
 
-    foreach ( c; iter )
+    for ( string s; !reader.empty; reader.popFront() )
     {
-        if ( c == '(' )
+        s = reader.front;
+
+        if ( s.startsWith( "(" ) )
         {
             opened++;
         }
         else
 
-        if ( c == ')' )
+        if ( s.startsWith( ")" ) )
         {
             closed++;
             if ( closed == opened )
             {
-                iter.popFront(); // read )
+                reader.popFront(); // read )
                 return true;
             }
         }
         else
 
-        if ( c == '"' )
+        if ( s.startsWith( "\"" ) )
         {
-            if ( readDoubleQuoted( iter ) )
+            if ( readDoubleQuoted( reader ) )
             {
                 //
             }
             else
             {
-                assert( 0, "error: got '\"', but not got '\"'" ~ iter.s[ startPos .. $ ] );
+                assert( 0, "error: got '\"', but not got '\"'" ~ startState.s );
             }
         }
     }
@@ -342,22 +372,24 @@ bool readRoundBrackets( StringIterator iter )
 }
 
 
-bool readDoubleQuoted( StringIterator iter )
+bool readDoubleQuoted( ref CharReader reader )
 {
-    foreach ( c; iter )
+    for ( string s; !reader.empty; reader.popFront() )
     {
+        s = reader.front;
+
         // escaped: \"
         // escaped: \\
-        if ( c == '\\' )
+        if ( s.startsWith( "\\" ) )
         {
-            iter.popFront();
+            reader.popFront();
             continue; // iter.popFront() again
         }
         else
 
-        if ( c == '\"' )
+        if ( s.startsWith( "\"" ) )
         {
-            iter.popFront(); // read last "
+            reader.popFront(); // read last "
             return true;
         }
     }
@@ -366,27 +398,29 @@ bool readDoubleQuoted( StringIterator iter )
 }
 
 
-bool readId( StringIterator iter, ref Tok[] tokenized )
+bool readId( ref CharReader reader, ref Tok[] tokenized )
 {
-    auto hasPos = iter.pos;
+    auto hashStart = reader.getState();
 
     // skip '#'
-    iter.popFront();
+    reader.popFront();
 
-    size_t startPos = iter.pos;
+    auto startState = reader.getState();
 
-    foreach ( c; iter )
+    for ( string s; !reader.empty; reader.popFront() )
     {
-        if ( c == ' ' )
+        s = reader.front;
+
+        if ( isWhite( s ) )
         {
             break;
         }
     }
 
     //
-    if ( startPos < iter.pos )
+    if ( reader != startState )
     {
-        tokenized ~= Tok( TokType.id, iter.s[ startPos .. iter.pos ], 0, startPos );
+        tokenized ~= Tok( TokType.id, reader.readedOf( startState ), 0, startState.pos );
         return true;
     }
     else

@@ -12,9 +12,12 @@ import std.stdio : writeln;
 import std.range : popFront;
 
 
-void parse_tag_e( R )( R range, Tok[] tokenized, size_t indent, ParsedElement* parentElement )
+void parse_tag_e( R )( ref R range, Tok[] tokenized, size_t indent, ParsedElement* parentElement )
 {
     import std.string : stripRight;
+    import std.range : empty;
+    import std.range : front;
+    import std.range : popFront;
 
     const
     string[] tags = 
@@ -31,16 +34,17 @@ void parse_tag_e( R )( R range, Tok[] tokenized, size_t indent, ParsedElement* p
     size_t indentLength;
     string word;
 
-    auto element = new ParsedElement( indent, tokenized.front.s, tokenized_id( tokenized ), tokenized_classes( tokenized ) );
+    auto element = new ParsedElement( indent, tokenized.front.s, tokenized_classes( tokenized ) );
     element.attachTo( parentElement );
 
     // skip tag line
     range.popFront();
 
     //
-    foreach ( line; range )
+    if ( !range.empty )
+    for ( string line; !range.empty; range.popFront() )
     {
-        line = line.stripRight();
+        line = range.front.stripRight();
 
         if ( line.length > 0 )
         {
@@ -73,27 +77,32 @@ void parse_tag_e( R )( R range, Tok[] tokenized, size_t indent, ParsedElement* p
                 }
             }
         }
+
+        if ( range.empty )
+        {
+            break;
+        }
     }
 }
 
 
-string tokenized_id( Tok[] tokenized )
-{
-    import std.algorithm : filter;
-    import std.algorithm : map;
-    import std.array     : array;
-    import std.range     : front;
-    import std.range     : take;
-    import std.range     : empty;
+//string tokenized_id( Tok[] tokenized )
+//{
+//    import std.algorithm : filter;
+//    import std.algorithm : map;
+//    import std.array     : array;
+//    import std.range     : front;
+//    import std.range     : take;
+//    import std.range     : empty;
 
-    auto range =
-        tokenized
-            .filter!( t => t.type == TokType.id )
-            .map!( t => t.s )
-            .take(1);
+//    auto range =
+//        tokenized
+//            .filter!( t => t.type == TokType.id )
+//            .map!( t => t.s )
+//            .take(1);
 
-    return range.empty ? "" : range.front; 
-}
+//    return range.empty ? "" : range.front; 
+//}
 
 string[] tokenized_classes( Tok[] tokenized )
 {

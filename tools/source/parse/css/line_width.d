@@ -30,7 +30,16 @@ bool parse_line_width( StringIterator range, LineWidth* lw )
     // length
     if ( range.front.isNumber() )
     {
-        return parse_length( range, &lw.length );
+        if ( parse_length( range, &lw.length ) )
+        {
+            lw.type = LineWidthType.length;
+            return true;
+        }
+        else            
+        {
+            assert( 0, "error: wrong line length" );
+            //return false;
+        }
     }
     else
 

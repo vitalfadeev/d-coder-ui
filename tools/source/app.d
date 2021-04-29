@@ -1,9 +1,9 @@
 import std.stdio;
 import parse.t.parser : Doc;
 import std.stdio : File;
-import std.file : exists;
-import std.file : mkdir;
-import std.path : buildPath;
+import std.file  : exists;
+import std.file  : mkdir;
+import std.path  : buildPath;
 
 // create .def
 // dub build
@@ -17,9 +17,23 @@ import std.path : buildPath;
 void main()
 {
     Doc doc;
+    remove_pre_generated();
     //parse_css();
     parse_t( &doc );
-    generate_d( &doc );
+    generate_style( &doc );
+    generate_body( &doc );
+    generate_package( &doc );
+}
+
+
+void remove_pre_generated()
+{
+    import std.file  : rmdirRecurse;
+
+    if ( exists( buildPath( "source", "generated" ) ) )
+    {
+        rmdirRecurse( buildPath( "source", "generated" ) );
+    }
 }
 
 
@@ -43,7 +57,7 @@ bool parse_t( Doc* doc )
 }
 
 
-void generate_d( Doc* doc )
+void generate_body( Doc* doc )
 {
     import std.format : format;
     import std.conv : to;
@@ -52,21 +66,19 @@ void generate_d( Doc* doc )
 
     s ~= "module generated.tree;\n";
     s ~= "\n";
+    s ~= "\n";
 
     s ~= "import ui;\n";
+    s ~= "import generated.style;\n";
     s ~= "\n";
 
-    s ~= "void initUI()\n";
+    s ~= "void initUI( ref Document document )\n";
     s ~= "{\n";
-    s ~= "  Document document;\n";
-    s ~= "\n";
     s ~= "  Element* element;\n";
     s ~= "  Element* parentElement;\n";
     s ~= "  \n";
 
     s ~= "  // body \n";
-    if ( doc.body.id.length > 0 )
-    s ~= format!"  document.body.id      = %s;\n"( doc.body.id.quote() );
     foreach ( className; doc.body.classes )
     s ~= format!"  document.body.addClass!%s;\n"(  className );
     s ~= "  \n";
@@ -75,11 +87,9 @@ void generate_d( Doc* doc )
     {
         s ~= format!"    // %s\n"( element.tagName );
         s ~= format!"    element = document.createElement( %s );\n"( element.tagName.quote() );
-        if ( element.id.length > 0 )
-        s ~= format!"    element.id      = %s;\n"( element.id.quote() );
         foreach ( className; element.classes )
         s ~= format!"    element.addClass!%s;\n"(  className );
-        s ~=        "    document.body.appendChilds( element );\n";
+        s ~=        "    document.body.appendChild( element );\n";
         s ~=        "    \n";
 
         if ( element.childs.length > 0 )
@@ -90,11 +100,9 @@ void generate_d( Doc* doc )
         {
             s ~= format!"      // %s\n"( e.tagName );
             s ~= format!"      element = document.createElement( %s );\n"( e.tagName.quote() );
-            if ( e.id.length > 0 )
-            s ~= format!"      element.id      = %s;\n"( e.id.quote() );
             foreach ( className; element.classes )
             s ~= format!"      element.addClass!%s;\n"(  className );
-            s ~=        "      parentElement.appendChilds( element );\n";
+            s ~=        "      parentElement.appendChild( element );\n";
             s ~=        "      \n";
         }
     }
@@ -103,12 +111,10 @@ void generate_d( Doc* doc )
 
     writeln( s );
 
-    // save file
-    if ( !exists( buildPath( "source", "generated" ) ) )
-    {
-        mkdir( buildPath( "source", "generated" ) );
-    }
+    //
+    create_folder( buildPath( "source", "generated" ) );
 
+    // save file
     auto f = File( buildPath( "source", "generated", "tree.d" ), "w" );
     f.write( s );
     f.close();
@@ -120,3 +126,80 @@ string quote( string s )
     return '"' ~ s ~ '"';
 }
 
+
+void generate_style( Doc* doc )
+{
+    import std.format : format;
+    import std.conv : to;
+
+    string s;
+
+    s ~= "module generated.style;\n";
+    s ~= "\n";
+    s ~= "\n";
+    s ~= "import ui;\n";
+    s ~= "\n";
+
+    foreach( cls; doc.style.classes )
+    {
+        s ~= format!"// %s;\n"( cls.className );
+        s ~= format!"struct %s\n"( cls.className );
+        s ~=        "{\n";
+        s ~=        "    Element* element;\n";
+        s ~=        "    alias    element this;\n";
+        s ~= format!"    string   className = %s;\n"( cls.className.quote );
+        s ~=        "    \n";
+        s ~=        "    void setter()\n";
+        s ~=        "    {\n";
+        foreach( setter; cls.setters )
+        {
+            s ~= format!"        // %s\n"( setter );
+        }
+        s ~=        "    }\n";
+        s ~=        "}\n";
+        s ~=        "\n";
+    }
+
+
+    writeln( s );
+
+    //
+    create_folder( buildPath( "source", "generated" ) );
+
+    // save file
+    auto f = File( buildPath( "source", "generated", "style.d" ), "w" );
+    f.write( s );
+    f.close();
+}
+
+void create_folder( string path )
+{
+    if ( !exists( path ) )
+    {
+        mkdir( path );
+    }
+}
+
+void generate_package( Doc* doc )
+{
+    import std.format : format;
+    import std.conv : to;
+
+    string s;
+
+    s ~= "module generated;\n";
+    s ~= "\n";
+    s ~= "public import generated.style;\n";
+    s ~= "public import generated.tree;\n";
+    s ~= "\n";
+
+    writeln( s );
+
+    //
+    create_folder( buildPath( "source", "generated" ) );
+
+    // save file
+    auto f = File( buildPath( "source", "generated", "package.d" ), "w" );
+    f.write( s );
+    f.close();
+}

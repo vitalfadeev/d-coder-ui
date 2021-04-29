@@ -21,6 +21,8 @@ enum WPARAM IDT_TIMER1 = WM_USER + 1;
 /** */
 class OSWindow : IDrawer
 {
+    Document document;
+
     /** */
     this( int w, int h )
     {
@@ -514,7 +516,7 @@ private:
     // BackBuefer
     BackBuffer createBackBuffer() nothrow
     {
-        auto backBuffer = new BackBuffer( _hdc, _w, _h );
+        auto backBuffer = new BackBuffer( _hdc, _w, _h, &document );
 
         return backBuffer;
     }
@@ -838,11 +840,14 @@ private:
 /** */
 class BackBuffer : IDrawer
 {
+    Document* document;
+
     /** */
-    this( HDC hdc, int w, int h ) nothrow
+    this( HDC hdc, int w, int h, Document* document ) nothrow
     {
         _w = w;
         _h = h;
+        this.document = document;
 
         //
         _hdc                = CreateCompatibleDC( hdc );
@@ -962,14 +967,15 @@ class BackBuffer : IDrawer
 
     void lineTo( int x, int y )
     {
-        Point p = center + Point( x, y );
+        Point p = center + Point( x, -y );
         LineTo( _hdc, p.x, p.y );
     }
 
 
     void point( POS x, POS y, Color color )
     {
-        SetPixel( _hdc, x, y, color.windowsCOLORREF );
+        Point p = center + Point( x, -y );
+        SetPixel( _hdc, p.x, p.y, color.windowsCOLORREF );
     }
 
 
@@ -1247,7 +1253,10 @@ class BackBuffer : IDrawer
 
     void vid()
     {
-        //
+        if ( document !is null )
+        {
+            document.body.vid( this );
+        }
     }
 
 

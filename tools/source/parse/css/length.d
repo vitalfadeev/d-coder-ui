@@ -3,7 +3,6 @@
 import parse.css.types : Length;
 import parse.css.types : LengthUnit;
 import stringiterator  : StringIterator;
-import std.stdio : writeln;
 
 
 bool parse_length( StringIterator range, Length* len )
@@ -42,6 +41,8 @@ bool parse_length( StringIterator range, Length* len )
 
     if ( parse_number( range, &len.length ) )
     {
+        import std.stdio : writeln;
+
         // without unit
         if ( range.empty )
         {
