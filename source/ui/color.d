@@ -51,7 +51,7 @@ struct Color
 
     string toString()
     {
-        return format!"Color( 0x%x )"( windowsCOLORREF );
+        return format!"Color( 0x%x%x%x )"( r, g, b );
     }
 
 

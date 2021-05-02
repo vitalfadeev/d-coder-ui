@@ -21,7 +21,7 @@ enum WPARAM IDT_TIMER1 = WM_USER + 1;
 /** */
 class OSWindow : IDrawer
 {
-    Document document;
+    Document* document;
 
     /** */
     this( int w, int h )
@@ -117,7 +117,7 @@ class OSWindow : IDrawer
 
     void moveTo( int x, int y )
     {
-        Point p = center + Point( x, y );
+        Point p = center + Point( x, -y );
         MoveToEx( _hdc, p.x, p.y, NULL );
     }
 
@@ -130,7 +130,7 @@ class OSWindow : IDrawer
 
     void lineTo( int x, int y )
     {
-        Point p = center + Point( x, y );
+        Point p = center + Point( x, -y );
         LineTo( _hdc, p.x, p.y );
     }
 
@@ -460,7 +460,10 @@ class OSWindow : IDrawer
 
     void vid()
     {
-        //
+        if ( document !is null )
+        {
+            document.body.vid( this );
+        }
     }
 
 
@@ -516,7 +519,7 @@ private:
     // BackBuefer
     BackBuffer createBackBuffer() nothrow
     {
-        auto backBuffer = new BackBuffer( _hdc, _w, _h, &document );
+        auto backBuffer = new BackBuffer( _hdc, _w, _h, document );
 
         return backBuffer;
     }
@@ -960,7 +963,7 @@ class BackBuffer : IDrawer
 
     void moveTo( int x, int y )
     {
-        Point p = center + Point( x, y );
+        Point p = center + Point( x, -y );
         MoveToEx( _hdc, p.x, p.y, NULL );
     }
 
@@ -1255,7 +1258,9 @@ class BackBuffer : IDrawer
     {
         if ( document !is null )
         {
+            //document.body.update();
             document.body.vid( this );
+            //document.body.dump();
         }
     }
 
@@ -1280,7 +1285,28 @@ class BackBuffer : IDrawer
 
     void process( ref KeyboardKeyEvent event )
     {
-        //
+        // focused
+        auto element = getFocused();
+        if ( element !is null )
+        {
+            // classes
+            foreach ( cls; element.classes )
+            {
+                if ( cls.process_KeyboardKey !is null )
+                {
+                    cls.process_KeyboardKey( element, event );
+                }
+            }
+
+            // element
+            element.process_KeyboardKey( element, event );
+        }
+    }
+
+
+    Element* getFocused()
+    {
+        retun null;
     }
 
 
@@ -1304,3 +1330,5 @@ void emit( string method, T, ARGS... )( T This, ARGS args )
     import std.exception : enforce;
     mixin( "enforce( This )." ~  method ~ "( args );" );
 }
+
+

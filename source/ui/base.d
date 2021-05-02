@@ -9,7 +9,8 @@ const PropsMembersCount = __traits( allMembers, Props ).length + 1;
 struct Props
 {
     Color      color;
-    Border     border;
+    //Border     border;
+    int        borderWidth;
     Background background;
     int        width;       // px | by-content: BY_CONTENT = -101 | percent: PERCENT = -1 .. -100
     int        height;      // px | by-content: BY_CONTENT = -101 | percent: PERCENT = -1 .. -100
@@ -23,12 +24,73 @@ struct Props
 
 struct Computed
 {
-    Color      color;
-    Border     border;
+    Color      color = { r: 0xCC, g: 0xCC, b: 0xCC };
+    
+    // border width
+    int        borderTopWidth;
+    int        borderRightWidth;
+    int        borderBottomWidth;
+    int        borderLeftWidth;
+    // border color
+    Color      borderTopColor;
+    Color      borderRightColor;
+    Color      borderBottomColor;
+    Color      borderLeftColor;
+    // border Style
+    LineStyle  borderTopStyle;
+    LineStyle  borderRightStyle;
+    LineStyle  borderBottomStyle;
+    LineStyle  borderLeftStyle;
+
     Background background;
     int        width;       // px
     int        height;      // px
     bool       fixed;       // fixed position, relative screen
+
+    @property
+    void borderWidth( int a )
+    {
+        borderTopWidth    = a;
+        borderRightWidth  = a;
+        borderBottomWidth = a;
+        borderLeftWidth   = a;
+    }
+
+    @property
+    string borderWidth()
+    {
+        return borderTopWidth.to!string;
+    }
+
+    @property
+    void borderStyle( LineStyle a )
+    {
+        borderTopStyle    = a;
+        borderRightStyle  = a;
+        borderBottomStyle = a;
+        borderLeftStyle   = a;
+    }
+
+    @property
+    string borderStyle()
+    {
+        return borderTopStyle.to!string;
+    }
+
+    @property
+    void borderColor( Color a )
+    {
+        borderTopColor    = a;
+        borderRightColor  = a;
+        borderBottomColor = a;
+        borderLeftColor   = a;
+    }
+
+    @property
+    string borderColor()
+    {
+        return borderTopColor.to!string;
+    }
 }
 
 
@@ -105,3 +167,24 @@ Element* createObject( string className )
 }
 
 
+int px( double a )
+{
+    import std.math : round;
+    import std.conv : to;
+    return round( a ).to!int;
+}
+
+
+enum LineStyle
+{
+    none, 
+    hidden, 
+    dotted, 
+    dashed, 
+    solid, 
+    double_,
+    groove, 
+    ridge, 
+    inset, 
+    outset
+};

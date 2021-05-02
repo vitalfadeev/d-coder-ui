@@ -10,7 +10,8 @@ ClassRegistry classRegistry;
 struct Class
 {
     string name;
-    void function( Element* This ) applier;
+    void function( Element* element ) setter;
+    void function( Element* element, ref KeyboardKeyEvent event ) process_KeyboardKeyEvent;
 }
 
 
@@ -41,18 +42,13 @@ void registerClass( T )()
     classRegistry.classes[ T.stringof ] = 
         new Class(
             T.stringof,
-            &applyClassMembers!T
+            &T.setter,
+            getFunc!( T, "process", "KeyDownEvent" )
         );
 }
 
 
-void applyClassMembers( T )( Element* This )
+auto getFunc( T, string FUNC, string ARG )()
 {
-    static 
-    foreach ( name; __traits( allMembers, T ) ) 
-    {
-        mixin ( "This.computed." ~ name ~ " = __traits( getMember, T.init, \"" ~ name ~ "\" ); " );
-    }    
+    return null;
 }
-
-

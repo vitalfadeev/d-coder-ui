@@ -44,6 +44,8 @@ struct Element
     void delegate( ref MouseWheelEvent  event ) _processMouseWheel;
     void delegate( ref KeyboardKeyEvent event ) _processKeyboardKey;
 
+    void function( Element* element, ref KeyboardKeyEvent event ) process_KeyboardKey;
+
     // For fast calculation in set()
     // ...for prevent memory allocation, reserve space here
     // ...for useing CPU cache
@@ -60,38 +62,78 @@ struct Element
 
         return 
             "Element" ~ "\n" ~
-            "  classes    : " ~ classes.to!string ~ "\n" ~
-            "  color      : " ~ computed.color.to!string ~ "\n" ~
-            "  border     : " ~ computed.border.to!string ~ "\n" ~
-            "  background : " ~ computed.background.to!string ;
+            "  classes     : " ~ classes.to!string ~ "\n" ~
+            "  color       : " ~ computed.color.to!string ~ "\n" ~
+            "  borderWidth : " ~ computed.borderWidth.to!string ~ "\n" ~
+            "  background  : " ~ computed.background.to!string ;
     }
 
 
+    void set()
+    {
+        //
+    }
+
     void vid( IDrawer drawer )
     {
+        update();
         vid_center( drawer );
         vid_border( drawer );
-        drawer.color( 0xCCCCCC.rgb );
-        drawer.moveTo( 0, 0 );
-        drawer.lineTo( 100, 100 );
+        //drawer.pen( computed.color, computed.borderWidth );
+        //drawer.moveTo( 0, 0 );
+        //drawer.lineTo( 100, 100 );
+
+        // childs
+        if ( firstChild !is null )
+        for ( auto e = firstChild; e !is null; e = e.nextSibling )
+        {
+            e.vid( drawer );
+        }
     }
 
 
     /** */
     void vid_center( IDrawer drawer )
     {
-        drawer.point( 0, 0, 0xCCCCCC.rgb ); // point at: 0, 0 ( center )
+        drawer.point( 0, 0, computed.color ); // point at: 0, 0 ( center )
     }
 
 
     /** */
     void vid_border( IDrawer drawer )
     {
-        if ( computed.border.pen.type )
+        auto w = computed.width / 2;
+        auto h = computed.height / 2;
+
+        if ( w > 0 && h > 0 ) 
         {
-            drawer.pen( computed.border.pen );
-            drawer.moveTo( 0, 0 );  // center
-            drawer.rectangle( m+m, m+m );
+                if ( computed.borderTopWidth )
+                {
+                    drawer.pen( computed.borderTopColor, computed.borderTopWidth );
+                    drawer.moveTo( -w, h );  // left  top
+                    drawer.lineTo(  w, h );  // right top
+                }
+
+                if ( computed.borderRightWidth )
+                {
+                    drawer.pen( computed.borderRightColor, computed.borderRightWidth );
+                    drawer.moveTo( w,  h );  // right top
+                    drawer.lineTo( w, -h );  // right bottom
+                }
+
+                if ( computed.borderBottomWidth )
+                {
+                    drawer.pen( computed.borderBottomColor, computed.borderBottomWidth );
+                    drawer.moveTo(  w, -h );  // right bottom
+                    drawer.lineTo( -w, -h );  // left  bottom
+                }
+                
+                if ( computed.borderLeftWidth )
+                {
+                    drawer.pen( computed.borderLeftColor, computed.borderLeftWidth );
+                    drawer.moveTo( -w, -h );  // left bottom
+                    drawer.lineTo( -w,  h );  // left top
+                }
         }
     }
 
@@ -145,13 +187,13 @@ struct Element
         }
 
         // element
-        applyElementMembers();
+        //applyElementMembers();
     }
 
 
     void applyClassMembers( Class* cls )
     {
-        cls.applier( &this );  // call applyClassMembers( T )( Element* this )
+        cls.setter( &this );  // call setClassMembers( T )( Element* this )
     }
 
 
@@ -225,7 +267,14 @@ struct Element
     {
         auto cls = classRegistry.find( TCLASS.stringof );
 
-        if ( cls && !this.classes.has( cls ) )
+        if ( cls is null )
+        {
+            import ui.classregistry : registerClass;
+            registerClass!TCLASS;
+            cls = classRegistry.find( TCLASS.stringof );
+        }
+
+        if ( cls !is null && !this.classes.has( cls ) )
         {
             this.classes ~= cls;
         }
@@ -259,29 +308,29 @@ struct Element
     /** */
     void border( Border val ) 
     {
-        props.border = val;
+        //props.border = val;
 
-        auto mid = memberId!( Props, "border" );
-        auto modPos = props.modifiedOrder[ mid ];
+        //auto mid = memberId!( Props, "border" );
+        //auto modPos = props.modifiedOrder[ mid ];
 
-        // not modified before
-        if ( modPos == 0 )
-        {
-            // add mod at last pos
-            props.modified[ props.modifiedLength ] = mid;
-            props.modifiedOrder[ mid ] = props.modifiedLength;
-            // save modifies length
-            props.modifiedLength += 1;
-        }
-        else // was modified
-        {
-            // remove prior mods
-            import std.algorithm.mutation : moveEmplaceAll;
-            moveEmplaceAll( props.modified[ mid+1 .. $ ], props.modified[ mid .. $ ] );
-            // add mod at last pos
-            props.modified[ props.modifiedLength ] = mid;
-            props.modifiedOrder[ mid ] = props.modifiedLength;
-        }
+        //// not modified before
+        //if ( modPos == 0 )
+        //{
+        //    // add mod at last pos
+        //    props.modified[ props.modifiedLength ] = mid;
+        //    props.modifiedOrder[ mid ] = props.modifiedLength;
+        //    // save modifies length
+        //    props.modifiedLength += 1;
+        //}
+        //else // was modified
+        //{
+        //    // remove prior mods
+        //    import std.algorithm.mutation : moveEmplaceAll;
+        //    moveEmplaceAll( props.modified[ mid+1 .. $ ], props.modified[ mid .. $ ] );
+        //    // add mod at last pos
+        //    props.modified[ props.modifiedLength ] = mid;
+        //    props.modifiedOrder[ mid ] = props.modifiedLength;
+        //}
 
     }
 
@@ -289,6 +338,12 @@ struct Element
     //{
     //    props.borderTopWidth = a;
     //}
+
+    @property
+    void borderWidth( int a )
+    {
+        computed.borderWidth = a;
+    }
 
 
     // Node
@@ -384,6 +439,20 @@ struct Element
     void process( ref KeyboardKeyEvent event )
     {
         //
+    }
+
+    void dump( int level = 0 )
+    {
+        import std.array : replicate;
+
+        writeln( " ".replicate( level ), &this, ": ", firstChild );
+
+        // childs
+        if ( firstChild !is null )
+        for ( auto e = firstChild; e !is null; e = e.nextSibling )
+        {
+            e.dump( level+2 );
+        }
     }
 }
 
