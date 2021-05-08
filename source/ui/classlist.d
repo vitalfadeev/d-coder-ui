@@ -1,11 +1,12 @@
 module ui.classlist;
 
 import ui.classregistry : Class;
+import ui.base : MAX_ELEMENT_CLASSES;
 
 
 struct ClassList
 {
-    Class*[] lst;
+    Class*[ MAX_ELEMENT_CLASSES ] lst;
     alias lst this;
 
     bool has( Class* cls )

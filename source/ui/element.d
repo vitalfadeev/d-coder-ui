@@ -2,15 +2,14 @@ module ui.element;
 
 import ui;
 import ui.classlist : ClassList;
-import ui.base : Props;
-import ui.base : Computed;
-import ui.base : Border;
-import ui.base : memberId;
+import ui.base      : Props;
+import ui.base      : Computed;
+import ui.base      : Border;
+import ui.base      : memberId;
 
 
 struct Element
 {
-    string tagName;
     string id;
 
     // Node properties
@@ -21,14 +20,21 @@ struct Element
     Element* lastChild;
 
     // Draw properties
-    ClassList classes;   // classes
-    Props     props;     // element-level properties
-    Computed  computed;  // computed properties: default properties + class-level properties + element-level properties
+    // classes
+    ClassList classes;
+
+    // Element Instance Class
+    // void function( Element* element ) setter;
+    // void function( Ekement* element, Event* event ) on;
+    Class instanceClass;
+
+    // computed properties: default properties + class-level properties + element-level properties
+    Computed computed;  
 
     // Magnetic properties
-    POS centerX;  // px, center: relative from the parent center
-    POS centerY;  // px, center: relative from the parent center
-    POWER m;      // m-power: -N .. +N
+    POS   centerX;  // px, center: relative from the parent center
+    POS   centerY;  // px, center: relative from the parent center
+    POWER m;        // m-power: -N .. +N
 
     //
     bool live;  // for delete Mag in array storage and prevent reallocationg storage
@@ -38,14 +44,10 @@ struct Element
 
     //
     void delegate( IDrawer drawer ) _vid;
-    bool delegate( Point p )  _hitTest;
-    void delegate( ref MouseKeyEvent    event ) _processMouseKey;
-    void delegate( ref MouseMoveEvent   event ) _processMouseMove;
-    void delegate( ref MouseWheelEvent  event ) _processMouseWheel;
-    void delegate( ref KeyboardKeyEvent event ) _processKeyboardKey;
+    bool delegate( Point p        ) _hitTest;
 
-    void function( Element* element, ref KeyboardKeyEvent event ) process_KeyboardKey;
 
+    // Magnetic helpers
     // For fast calculation in set()
     // ...for prevent memory allocation, reserve space here
     // ...for useing CPU cache
@@ -180,20 +182,10 @@ struct Element
         resetToDefault();
 
         // classes
-        foreach( cls; classes )
-        {
-            // apply class members
-            applyClassMembers( cls );
-        }
+        applyClassMembers();
 
         // element
-        //applyElementMembers();
-    }
-
-
-    void applyClassMembers( Class* cls )
-    {
-        cls.setter( &this );  // call setClassMembers( T )( Element* this )
+        applyElementMembers();
     }
 
 
@@ -203,26 +195,24 @@ struct Element
     }
 
 
+    void applyClassMembers()
+    {
+        foreach( cls; classes )
+        {
+            if ( cls.setter !is null )
+            {
+                cls.setter( &this );  // call setClassMembers( T )( Element* this )
+            }
+        }
+    }
+
+
     void applyElementMembers()
     {
-        import std.traits : hasMember;
-
-        foreach( nameId; this.props.modified )
+        if ( instanceClass.setter !is null )
         {
-            static 
-            foreach ( i, name; __traits( allMembers, Props ) ) 
-            {
-                static 
-                if ( hasMember!( Computed, name ) )
-                {                
-                    if ( nameId == i )
-                    {
-                        // this.computed.name = props.value;
-                        mixin( "this.computed." ~ name ~ " = __traits( getMember, this.props, \"" ~ name ~ "\" );" );
-                    }
-                }
-            }
-        }    
+            instanceClass.setter( &this );  // call setClassMembers( T )( Element* this )
+        }
     }
 
 
@@ -235,7 +225,7 @@ struct Element
             import generated;
 
             static
-            foreach( TCLASS; __traits( allMembers, generated ) ) 
+            foreach ( TCLASS; __traits( allMembers, generated ) ) 
             {
                 static 
                 if ( is( TCLASS == struct ) )
@@ -416,31 +406,7 @@ struct Element
     }
 
 
-    // Events
     /** */
-    void process( ref MouseKeyEvent event )
-    {
-        //
-    }
-
-
-    void process( ref MouseMoveEvent event )
-    {
-        //
-    }
-
-
-    void process( ref MouseWheelEvent event )
-    {
-        //
-    }
-
-
-    void process( ref KeyboardKeyEvent event )
-    {
-        //
-    }
-
     void dump( int level = 0 )
     {
         import std.array : replicate;

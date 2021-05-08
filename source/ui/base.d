@@ -3,29 +3,13 @@ module ui.base;
 import ui;
 import std.json;
 
+enum MAX_CLASSES = 255;
+enum MAX_ELEMENT_CLASSES = 16;
 
 const PropsMembersCount = __traits( allMembers, Props ).length + 1;
 
-struct Props
-{
-    Color      color;
-    //Border     border;
-    int        borderWidth;
-    Background background;
-    int        width;       // px | by-content: BY_CONTENT = -101 | percent: PERCENT = -1 .. -100
-    int        height;      // px | by-content: BY_CONTENT = -101 | percent: PERCENT = -1 .. -100
-    bool       fixed;       // fixed position, relative screen
-
-    ubyte                    modifiedLength; // 3
-    ubyte[PropsMembersCount] modified;       // [ 2, 1, 3, 0 ] // 1=color, 2=border, 3=background, ..., PropsMembersCount, 0 ( zero ended )
-    ubyte[PropsMembersCount] modifiedOrder;  // [ 2, 1, 3, 0 ] // 1.color at 2, 2.border at 1, 3.background at 3
-}
-
-
 struct Computed
 {
-    Color      color = { r: 0xCC, g: 0xCC, b: 0xCC };
-    
     // border width
     int        borderTopWidth;
     int        borderRightWidth;
@@ -42,10 +26,16 @@ struct Computed
     LineStyle  borderBottomStyle;
     LineStyle  borderLeftStyle;
 
+    Color      color;
     Background background;
-    int        width;       // px
-    int        height;      // px
+    int        width;       // px | by-content: BY_CONTENT = -101 | percent: PERCENT = -1 .. -100
+    int        height;      // px | by-content: BY_CONTENT = -101 | percent: PERCENT = -1 .. -100
     bool       fixed;       // fixed position, relative screen
+
+    ubyte                    modifiedLength; // 3
+    ubyte[PropsMembersCount] modified;       // [ 2, 1, 3, 0 ] // 1=color, 2=border, 3=background, ..., PropsMembersCount, 0 ( zero ended )
+    ubyte[PropsMembersCount] modifiedOrder;  // [ 2, 1, 3, 0 ] // 1.color at 2, 2.border at 1, 3.background at 3
+
 
     @property
     void borderWidth( int a )

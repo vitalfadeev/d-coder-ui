@@ -24,9 +24,23 @@ struct Document
 
     Element* createElement( string tagName )
     {
-        Element* element = new Element();
+        Element* element;
+
+        if ( tagName == "e" )
+        {
+            element = createElement!Element();
+            element.addClass( "e" );
+        }
+
         return element;
     }
+}
+
+pragma( inline, true )
+void createElement( T )()
+{
+    writeln( "Create element: ", T.stringof );
+    Element* element = new T();
 }
 
 
