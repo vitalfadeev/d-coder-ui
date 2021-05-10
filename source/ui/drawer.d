@@ -6,10 +6,7 @@ import ui : Size;
 import ui : POS;
 import ui : Pen;
 import ui : PenType;
-import ui.event : MouseKeyEvent;
-import ui.event : MouseMoveEvent;
-import ui.event : MouseWheelEvent;
-import ui.event : KeyboardKeyEvent;
+import ui : Event;
 
 
 /** */
@@ -30,10 +27,7 @@ interface IDrawer
     void  rectangle( int w, int h );
     void  set();
     void  vid();
-    void  process( ref MouseKeyEvent event );
-    void  process( ref MouseMoveEvent event );
-    void  process( ref MouseWheelEvent event );
-    void  process( ref KeyboardKeyEvent event );
+    int   on( Event* event ) nothrow;
 }
 
 

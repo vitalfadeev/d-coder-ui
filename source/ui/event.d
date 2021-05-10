@@ -49,6 +49,33 @@ mixin template ControlKeys()
 }
 
 
+struct Event
+{
+    UINT type;  // WM_KEYDOWN, WM_KEYUP
+    union
+    {
+        MouseKeyEvent    mouseKey;
+        MouseMoveEvent   mouseMove;
+        MouseWheelEvent  mouseWheel;
+        KeyboardKeyEvent keyboard;
+    }
+
+    auto name()
+    {
+        import std.conv : to;
+        return type.to!string;
+    }
+
+    auto arg1()
+    {
+        switch ( type )
+        {
+            case WM_KEYDOWN: return keyboard.code;
+            default: return 0;
+        }
+    }
+}
+
 struct MouseKeyEvent
 {
     HWND    hwnd;

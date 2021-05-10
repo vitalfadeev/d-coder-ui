@@ -34,6 +34,17 @@ class OSWindow : IDrawer
 
 
     /** */
+    this( Document* document )
+    {
+        this.document = document;
+        _w = 640;
+        _h = 480;
+        _createOSWindowClass();
+        _createOSWindow();
+    }
+
+
+    /** */
     void center( Point praCenter, int x, int y )
     {
         _center.x = praCenter.x + x;
@@ -49,7 +60,7 @@ class OSWindow : IDrawer
 
 
     /** */
-    Size size()
+    Size size() nothrow
     {
         return Size( _w, _h );
     }
@@ -466,28 +477,69 @@ class OSWindow : IDrawer
         }
     }
 
-
-    void process( ref MouseKeyEvent event )
+    int on( Event* event ) nothrow
     {
-        //
-    }
+        try {
+            switch ( event.type )
+            {
+                case WM_KEYDOWN:
+                {
+                    if ( document !is null )
+                    //if ( document.body.instanceClass.on !is null )
+                    {
+                        //document.body.instanceClass.on( &document.body, event );
 
+                        auto element = findObject( &document.body, Point( 0, 0 ) );
+                        writeln( "WM_LBUTTONDOWN: ", element );
+                        if ( element !is null )
+                        {
+                            // class on()
+                            foreach ( cls; element.classes )
+                            {
+                                if ( cls.on !is null )
+                                {
+                                    writeln( "WM_LBUTTONDOWN: cls.on: ", cls.name );
+                                    cls.on( element, event );
+                                }
+                            }
+                        }
+                    }
+                    return 0;
+                }
 
-    void process( ref MouseMoveEvent event )
-    {
-        //
-    }
+                case WM_LBUTTONDOWN:
+                {
+                    if ( document !is null )
+                    {
+                        auto element = findObject( &document.body, event.mouseKey.to );
+                        writeln( "WM_LBUTTONDOWN: ", element );
+                        if ( element !is null )
+                        {
+                            writeln( "WM_LBUTTONDOWN: ", *element );
+                            // class on()
+                            foreach ( cls; element.classes )
+                            {
+                                if ( cls.on !is null )
+                                {
+                                    writeln( "WM_LBUTTONDOWN: cls.on: ", cls.name );
+                                    cls.on( element, event );
+                                }
+                            }
 
+                            // element on()
+                            if ( element.instanceClass.on !is null )
+                            {
+                                writeln( "WM_LBUTTONDOWN: element.on: ", element.instanceClass.name );
+                                element.instanceClass.on( element, event );
+                            }
+                        }
+                    }
+                    return 0;
+                }
 
-    void process( ref MouseWheelEvent event )
-    {
-        //
-    }
-
-
-    void process( ref KeyboardKeyEvent event )
-    {
-        //
+                default: return 0;
+            }
+        } catch ( Throwable e ) { assert( 0, e.toString() ); }
     }
 
 
@@ -575,7 +627,8 @@ private:
                 //    return 0;
                 //}
                     
-                case WM_PAINT: {
+                case WM_PAINT: 
+                {
                     version ( DebugCalls ) Writeln( __FUNCTION__, ": WM_PAINT" );
                     //
                     version ( TestRenderTime )
@@ -656,38 +709,37 @@ private:
                 //case WM_SYSKEYDOWN: 
                 //    goto case WM_KEYDOWN;
 
-                case WM_KEYDOWN: {
-                    try {
-                        KeyboardKeyEvent event = { hwnd, message, wParam, lParam };
-                        window.process( event );
-                    } catch ( Throwable e ) { assert( 0, e.toString() ); }
+                case WM_KEYDOWN: 
+                {
+                    Event event = { type: WM_KEYDOWN, keyboard: { hwnd, message, wParam, lParam } };
+                    window.on( &event );
+                    RedrawWindow( hwnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW );
                     return 0;
                 }
                     
-                case WM_LBUTTONDOWN: {
-                    try {
-                        MouseKeyEvent event = { hwnd, message, wParam, lParam };
-                        event.drawer = *window;
+                case WM_LBUTTONDOWN: 
+                {
+                    Event event = { type: WM_LBUTTONDOWN, mouseKey: { hwnd, message, wParam, lParam } };
+                    event.mouseKey.drawer = *window;
 
-                        // center
-                        auto size = window.size();
-                        event.to.x =    GET_X_LPARAM( lParam ) - size.w / 2;
-                        event.to.y = -( GET_Y_LPARAM( lParam ) - size.h / 2 );
-                        
-                        //
-                        window.process( event );
+                    // center
+                    auto size = window.size();
+                    event.mouseKey.to.x =    GET_X_LPARAM( lParam ) - size.w / 2;
+                    event.mouseKey.to.y = -( GET_Y_LPARAM( lParam ) - size.h / 2 );
+                    
+                    //
+                    window.on( &event );
 
-                        // update window
-                        RedrawWindow( hwnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW );
-                        //InvalidateRect( hwnd, NULL, 0 );
-                        //UpdateWindow( hwnd );
+                    // update window
+                    RedrawWindow( hwnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW );
+                    //InvalidateRect( hwnd, NULL, 0 );
+                    //UpdateWindow( hwnd );
 
-                        //auto curObject = root.objectAtPoint( event.point );
-                        //if ( curObject !is null )
-                        //{
-                        //    window.callHierarhically!( "onLeftMouseDown" )( curObject, event );
-                        //}
-                    } catch ( Throwable e ) { assert( 0, e.toString() ); }
+                    //auto curObject = root.objectAtPoint( event.point );
+                    //if ( curObject !is null )
+                    //{
+                    //    window.callHierarhically!( "onLeftMouseDown" )( curObject, event );
+                    //}
                     return 0;
                 }
                     
@@ -717,55 +769,53 @@ private:
                 //    return 0;
                 //}
                     
-                case WM_MOUSEMOVE: {
-                    try {
-                        MouseMoveEvent event = { hwnd, message, wParam, lParam };
-                        event.drawer = *window;
+                case WM_MOUSEMOVE: 
+                {
+                    Event event = { type: WM_MOUSEMOVE, mouseMove: { hwnd, message, wParam, lParam } };
+                    event.mouseMove.drawer = *window;
 
-                        // center
-                        auto size = window.size();
-                        event.to.x =    GET_X_LPARAM( lParam ) - size.w / 2;
-                        event.to.y = -( GET_Y_LPARAM( lParam ) - size.h / 2 );
-                        
-                        //
-                        window.process( event );
+                    // center
+                    auto size = window.size();
+                    event.mouseMove.to.x =    GET_X_LPARAM( lParam ) - size.w / 2;
+                    event.mouseMove.to.y = -( GET_Y_LPARAM( lParam ) - size.h / 2 );
+                    
+                    //
+                    window.on( &event );
 
-                        // update window
-                        RedrawWindow( hwnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW );
-                        //InvalidateRect( hwnd, NULL, 0 );
-                        //UpdateWindow( hwnd );
-
-                    } catch ( Throwable e ) { assert( 0, e.toString() ); }
+                    // update window
+                    RedrawWindow( hwnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW );
+                    //InvalidateRect( hwnd, NULL, 0 );
+                    //UpdateWindow( hwnd );
                     return 0;
                 }
                     
-                case WM_MOUSEWHEEL: {
-                    try {
-                        MouseWheelEvent event = { hwnd, message, wParam, lParam };
-                        event.drawer = *window;
+                case WM_MOUSEWHEEL: 
+                {
+                    Event event = { type: WM_MOUSEWHEEL, mouseWheel: { hwnd, message, wParam, lParam } };
+                    event.mouseWheel.drawer = *window;
 
-                        //RECT wrect;
-                        //GetWindowRect( hwnd, &wrect );
-                        //RECT crect;
-                        //GetClientRect ( hwnd, &crect );
-                        POINT p = POINT( GET_X_LPARAM( lParam ), GET_Y_LPARAM( lParam ) );
-                        ScreenToClient( hwnd, &p );
+                    //RECT wrect;
+                    //GetWindowRect( hwnd, &wrect );
+                    //RECT crect;
+                    //GetClientRect ( hwnd, &crect );
+                    POINT p = POINT( GET_X_LPARAM( lParam ), GET_Y_LPARAM( lParam ) );
+                    ScreenToClient( hwnd, &p );
 
-                        // center
-                        auto size = window.size();
-                        event.to.x =    p.x - size.w / 2;
-                        event.to.y = -( p.y - size.h / 2 );
-                        
-                        //
-                        window.process( event );
+                    // center
+                    auto size = window.size();
+                    event.mouseWheel.to.x =    p.x - size.w / 2;
+                    event.mouseWheel.to.y = -( p.y - size.h / 2 );
+                    
+                    //
+                    window.on( &event );
 
-                        //
-                        RedrawWindow( hwnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW );
-                    } catch ( Throwable e ) { assert( 0, e.toString() ); }
+                    //
+                    RedrawWindow( hwnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW );
                     return 0;
                 }
 
-                case WM_TIMER: {
+                case WM_TIMER: 
+                {
                     if ( wParam == IDT_TIMER1 )
                     {
                         //InvalidateRect( hwnd, NULL, 0 );
@@ -806,7 +856,8 @@ private:
                 //    return 0;
                 //}
                     
-                case WM_CLOSE: {
+                case WM_CLOSE: 
+                {
                     try {
                         //emit!"onClose"( window );
                         DestroyWindow( hwnd );
@@ -814,7 +865,8 @@ private:
                     return 0;
                 }
                     
-                case WM_DESTROY: {
+                case WM_DESTROY: 
+                {
                     try {
                         _forgetWindow( hwnd );
 
@@ -1265,48 +1317,15 @@ class BackBuffer : IDrawer
     }
 
 
-    void process( ref MouseKeyEvent event )
+    int on( Event* event ) nothrow
     {
-        //
-    }
-
-
-    void process( ref MouseMoveEvent event )
-    {
-        //
-    }
-
-
-    void process( ref MouseWheelEvent event )
-    {
-        //
-    }
-
-
-    void process( ref KeyboardKeyEvent event )
-    {
-        // focused
-        auto element = getFocused();
-        if ( element !is null )
-        {
-            // classes
-            foreach ( cls; element.classes )
-            {
-                if ( cls.process_KeyboardKey !is null )
-                {
-                    cls.process_KeyboardKey( element, event );
-                }
-            }
-
-            // element
-            element.process_KeyboardKey( element, event );
-        }
+        return 0;
     }
 
 
     Element* getFocused()
     {
-        retun null;
+        return null;
     }
 
 
@@ -1332,3 +1351,16 @@ void emit( string method, T, ARGS... )( T This, ARGS args )
 }
 
 
+/** */
+auto findObject( Element* root, Point p )
+{
+    auto element = root;
+
+    if ( element.hitTest( p ) )
+    {
+        writeln( "hitTest: ok" );
+        return element;
+    }
+
+    return null;
+}

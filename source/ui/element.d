@@ -2,7 +2,6 @@ module ui.element;
 
 import ui;
 import ui.classlist : ClassList;
-import ui.base      : Props;
 import ui.base      : Computed;
 import ui.base      : Border;
 import ui.base      : memberId;
@@ -26,7 +25,7 @@ struct Element
     // Element Instance Class
     // void function( Element* element ) setter;
     // void function( Ekement* element, Event* event ) on;
-    Class instanceClass;
+    Class instanceClass = { name: "e" };
 
     // computed properties: default properties + class-level properties + element-level properties
     Computed computed;  
@@ -43,8 +42,8 @@ struct Element
     void* data; // payload
 
     //
-    void delegate( IDrawer drawer ) _vid;
-    bool delegate( Point p        ) _hitTest;
+    //void delegate( IDrawer drawer ) _vid;
+    //bool delegate( Point p        ) _hitTest;
 
 
     // Magnetic helpers
@@ -170,12 +169,14 @@ struct Element
     /** */
     bool hitTest( Point p )
     {
+        writeln( "hitTest: ", p );
         return 
-            ( abs( p.x ) <= abs( m ) ) &&
-            ( abs( p.y ) <= abs( m ) );
+            ( abs( p.x ) <= abs( computed.width / 2 ) ) &&
+            ( abs( p.y ) <= abs( computed.height / 2 ) );
     }
 
 
+    /** */
     void update()
     {
         // init
@@ -197,7 +198,7 @@ struct Element
 
     void applyClassMembers()
     {
-        foreach( cls; classes )
+        foreach ( cls; classes[ 0 .. classes.length ] )
         {
             if ( cls.setter !is null )
             {
@@ -257,6 +258,7 @@ struct Element
     {
         auto cls = classRegistry.find( TCLASS.stringof );
 
+        //
         if ( cls is null )
         {
             import ui.classregistry : registerClass;
@@ -264,6 +266,7 @@ struct Element
             cls = classRegistry.find( TCLASS.stringof );
         }
 
+        //
         if ( cls !is null && !this.classes.has( cls ) )
         {
             this.classes ~= cls;
@@ -271,20 +274,81 @@ struct Element
     }
 
 
-    void delClass( string className )
+    void toggleClass( TCLASS )()
     {
-        import std.algorithm : countUntil;
-        import std.array     : replaceInPlace;
+        auto cls = classRegistry.find( TCLASS.stringof );
 
+        //
+        if ( cls is null )
+        {
+            import ui.classregistry : registerClass;
+            registerClass!TCLASS;
+            cls = classRegistry.find( TCLASS.stringof );
+        }
+
+        //
+        if ( hasClass!TCLASS )
+            this.delClass( TCLASS.stringof );
+        else
+            this.classes ~= cls;
+    }
+
+
+    void toggleClass( string className )
+    {
         auto cls = classRegistry.find( className );
 
+        //
+        if ( cls is null )
+        {
+            assert( 0, "error: unregistered class: " ~ className );
+        }
+
+        //
+        if ( hasClass( className ) )
+            this.delClass( className );
+        else
+            this.classes ~= cls;
+    }
+
+
+    bool hasClass( TCLASS )()
+    {
+        auto cls = classRegistry.find( TCLASS.stringof );
+
+        writeln( "hasClass: ", cls, ": ", this.classes.has( cls ) );
+        if ( cls && this.classes.has( cls ) )
+            return true;
+        else
+            return false;
+    }
+
+
+    bool hasClass( string className )
+    {
+        auto cls = classRegistry.find( className );
+
+        writeln( "hasClass: ", cls, ": ", this.classes.has( cls ) );
+        if ( cls && this.classes.has( cls ) )
+            return true;
+        else
+            return false;
+    }
+
+
+    void delClass( string className )
+    {
+        auto cls = classRegistry.find( className );
+
+        writeln( "delClass: ", cls, ": ", this.classes.has( cls ) );
         if ( cls && this.classes.has( cls ) )
         {
             auto pos = this.classes.countUntil( cls );
+            writeln( "delClass: ", cls, ": ", pos );
 
             if ( pos != -1 )
             {
-                this.classes.replaceInPlace( pos, pos+1, cast( typeof( this.classes ) )[] );
+                this.classes.deleteInPlace( pos, pos+1 );
             }
         }
         else
@@ -332,6 +396,18 @@ struct Element
     @property
     void borderWidth( int a )
     {
+        // instanceClass.setter
+        //   ~= Setter( set_borderWidth, a );
+        //
+        // struct Setter
+        // {
+        //     int a;
+        //
+        //     void set() 
+        //     {
+        //         borderWidth = a;
+        //     }
+        // }
         computed.borderWidth = a;
     }
 

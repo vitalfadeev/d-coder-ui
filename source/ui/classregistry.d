@@ -2,6 +2,7 @@ module ui.classregistry;
 
 import std.stdio  : writeln;
 import ui.element : Element;
+import ui.event   : Event;
 
 
 ClassRegistry classRegistry;
@@ -39,7 +40,7 @@ void registerClass( T )()
     classRegistry.classes[ T.stringof ] = 
         new Class(
             T.stringof,
-            &T.setter,
+            getFunc!( T, "setter" ),
             getFunc!( T, "on" )
         );
 }
@@ -49,9 +50,9 @@ pragma( inline, true )
 auto getFunc( T, string FUNC )()
 {
     static
-    if ( __trait( hasMember, T, FUNC ) )
-        return __trait( getMember, T, FUNC );
-
-    return null;
+    if ( __traits( hasMember, T, FUNC ) )
+        return &__traits( getMember, T, FUNC );
+    else
+        return null;
 }
 

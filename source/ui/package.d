@@ -40,19 +40,19 @@ public import ui.base     : PenType;
 public import ui.document : Document;
 
 // Class
-public import ui.classregistry  : Class;
-public import ui.classregistry  : classRegistry;
+public import ui.classregistry : Class;
+public import ui.classregistry : classRegistry;
+public import ui.classregistry : registerClass;
 
 // Events
-public import ui.event   : MouseKeyEvent;
-public import ui.event   : MouseMoveEvent;
-public import ui.event   : MouseWheelEvent;
-public import ui.event   : KeyboardKeyEvent;
+public import ui.event   : Event;
 public import ui.keycodes;
+public import ui.eventtypes;
 
 // Base classes
 public import ui.element : Element;
 public import ui.drawer  : IDrawer;
+public import ui.base    : e;
 
 // Thread locals
 

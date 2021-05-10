@@ -28,8 +28,8 @@ struct Document
 
         if ( tagName == "e" )
         {
-            element = createElement!Element();
-            element.addClass( "e" );
+            element = .createElement!Element();
+            element.addClass!e;
         }
 
         return element;
@@ -37,10 +37,11 @@ struct Document
 }
 
 pragma( inline, true )
-void createElement( T )()
+auto createElement( T )()
 {
     writeln( "Create element: ", T.stringof );
     Element* element = new T();
+    return element;
 }
 
 

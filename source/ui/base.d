@@ -6,7 +6,6 @@ import std.json;
 enum MAX_CLASSES = 255;
 enum MAX_ELEMENT_CLASSES = 16;
 
-const PropsMembersCount = __traits( allMembers, Props ).length + 1;
 
 struct Computed
 {
@@ -31,10 +30,6 @@ struct Computed
     int        width;       // px | by-content: BY_CONTENT = -101 | percent: PERCENT = -1 .. -100
     int        height;      // px | by-content: BY_CONTENT = -101 | percent: PERCENT = -1 .. -100
     bool       fixed;       // fixed position, relative screen
-
-    ubyte                    modifiedLength; // 3
-    ubyte[PropsMembersCount] modified;       // [ 2, 1, 3, 0 ] // 1=color, 2=border, 3=background, ..., PropsMembersCount, 0 ( zero ended )
-    ubyte[PropsMembersCount] modifiedOrder;  // [ 2, 1, 3, 0 ] // 1.color at 2, 2.border at 1, 3.background at 3
 
 
     @property
@@ -178,3 +173,21 @@ enum LineStyle
     inset, 
     outset
 };
+
+
+struct e
+{
+    string name = "e";
+
+    //static
+    //void setter( Element* element )
+    //{
+    //    //
+    //}
+
+    //static
+    //void on( Element* element, Event* event )
+    //{
+    //    //
+    //}
+}
