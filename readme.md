@@ -236,7 +236,7 @@ void UI()
 
     initUI( document );
 
-    auto window = new MyWindow( document );
+    auto window = new OSWindow( document );
 }
 
 
@@ -261,15 +261,6 @@ void exit()
     doLoop = false;
 }
 
-
-/** */
-class MyWindow : OSWindow
-{
-    this( Document* document )
-    {
-        super( document );
-    }
-}
 ```
 
 ### Building with dub
