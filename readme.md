@@ -253,14 +253,6 @@ void eventLoop()
        DispatchMessage( &msg );
    }
 }
-
-
-/** */
-void exit()
-{
-    doLoop = false;
-}
-
 ```
 
 ### Building with dub
