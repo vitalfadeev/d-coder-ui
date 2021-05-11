@@ -28,7 +28,7 @@ struct Element
     Class instanceClass = { name: "e" };
 
     // computed properties: default properties + class-level properties + element-level properties
-    Computed computed;  
+    Computed computed;
 
     // Magnetic properties
     POS   centerX;  // px, center: relative from the parent center
@@ -50,10 +50,10 @@ struct Element
     // For fast calculation in set()
     // ...for prevent memory allocation, reserve space here
     // ...for useing CPU cache
-    int _cd_power;
-    POS _cd_offset;
-    int _gh_power;
-    POS _gh_offset;
+    int inPowerLeft  =  100;  // to childs
+    int inPowerRight =  100;  // to childs
+    int powerLeft    =  100;  // to sibling
+    int powerRight   =  100;  // to sibling
 
 
     /** */
@@ -72,12 +72,14 @@ struct Element
 
     void set()
     {
-        //
+        import ui.setmagnetic : set_magnetic;
+        set_magnetic( &this );
     }
 
     void vid( IDrawer drawer )
     {
         update();
+        set();
         vid_center( drawer );
         vid_border( drawer );
         //drawer.pen( computed.color, computed.borderWidth );
@@ -96,7 +98,7 @@ struct Element
     /** */
     void vid_center( IDrawer drawer )
     {
-        drawer.point( 0, 0, computed.color ); // point at: 0, 0 ( center )
+        drawer.point( centerX, centerY, computed.color ); // point at: 0, 0 ( center )
     }
 
 
@@ -108,33 +110,33 @@ struct Element
 
         if ( w > 0 && h > 0 ) 
         {
-                if ( computed.borderTopWidth )
-                {
-                    drawer.pen( computed.borderTopColor, computed.borderTopWidth );
-                    drawer.moveTo( -w, h );  // left  top
-                    drawer.lineTo(  w, h );  // right top
-                }
+            if ( computed.borderTopWidth )
+            {
+                drawer.pen( computed.borderTopColor, computed.borderTopWidth );
+                drawer.moveTo( centerX + -w, centerY + h );  // left  top
+                drawer.lineTo( centerX +  w, centerY + h );  // right top
+            }
 
-                if ( computed.borderRightWidth )
-                {
-                    drawer.pen( computed.borderRightColor, computed.borderRightWidth );
-                    drawer.moveTo( w,  h );  // right top
-                    drawer.lineTo( w, -h );  // right bottom
-                }
+            if ( computed.borderRightWidth )
+            {
+                drawer.pen( computed.borderRightColor, computed.borderRightWidth );
+                drawer.moveTo( centerX + w, centerY +  h );  // right top
+                drawer.lineTo( centerX + w, centerY + -h );  // right bottom
+            }
 
-                if ( computed.borderBottomWidth )
-                {
-                    drawer.pen( computed.borderBottomColor, computed.borderBottomWidth );
-                    drawer.moveTo(  w, -h );  // right bottom
-                    drawer.lineTo( -w, -h );  // left  bottom
-                }
-                
-                if ( computed.borderLeftWidth )
-                {
-                    drawer.pen( computed.borderLeftColor, computed.borderLeftWidth );
-                    drawer.moveTo( -w, -h );  // left bottom
-                    drawer.lineTo( -w,  h );  // left top
-                }
+            if ( computed.borderBottomWidth )
+            {
+                drawer.pen( computed.borderBottomColor, computed.borderBottomWidth );
+                drawer.moveTo( centerX +  w, centerY + -h );  // right bottom
+                drawer.lineTo( centerX + -w, centerY + -h );  // left  bottom
+            }
+            
+            if ( computed.borderLeftWidth )
+            {
+                drawer.pen( computed.borderLeftColor, computed.borderLeftWidth );
+                drawer.moveTo( centerX + -w, centerY + -h );  // left bottom
+                drawer.lineTo( centerX + -w, centerY +  h );  // left top
+            }
         }
     }
 
@@ -169,10 +171,9 @@ struct Element
     /** */
     bool hitTest( Point p )
     {
-        writeln( "hitTest: ", p );
         return 
-            ( abs( p.x ) <= abs( computed.width / 2 ) ) &&
-            ( abs( p.y ) <= abs( computed.height / 2 ) );
+            ( abs( p.x - centerX ) <= abs( computed.width / 2 ) ) &&
+            ( abs( p.y - centerY ) <= abs( computed.height / 2 ) );
     }
 
 
@@ -198,7 +199,7 @@ struct Element
 
     void applyClassMembers()
     {
-        foreach ( cls; classes[ 0 .. classes.length ] )
+        foreach ( cls; classes )
         {
             if ( cls.setter !is null )
             {
@@ -305,10 +306,10 @@ struct Element
         }
 
         //
-        if ( hasClass( className ) )
-            this.delClass( className );
+        if ( hasClass( cls ) )
+            delClass( cls );
         else
-            this.classes ~= cls;
+            classes ~= cls;
     }
 
 
@@ -316,7 +317,6 @@ struct Element
     {
         auto cls = classRegistry.find( TCLASS.stringof );
 
-        writeln( "hasClass: ", cls, ": ", this.classes.has( cls ) );
         if ( cls && this.classes.has( cls ) )
             return true;
         else
@@ -328,8 +328,20 @@ struct Element
     {
         auto cls = classRegistry.find( className );
 
-        writeln( "hasClass: ", cls, ": ", this.classes.has( cls ) );
-        if ( cls && this.classes.has( cls ) )
+        assert ( cls !is null );
+
+        if ( this.classes.has( cls ) )
+            return true;
+        else
+            return false;
+    }
+
+
+    bool hasClass( Class* cls )
+    {
+        assert ( cls !is null );
+
+        if ( this.classes.has( cls ) )
             return true;
         else
             return false;
@@ -340,11 +352,9 @@ struct Element
     {
         auto cls = classRegistry.find( className );
 
-        writeln( "delClass: ", cls, ": ", this.classes.has( cls ) );
         if ( cls && this.classes.has( cls ) )
         {
             auto pos = this.classes.countUntil( cls );
-            writeln( "delClass: ", cls, ": ", pos );
 
             if ( pos != -1 )
             {
@@ -354,6 +364,22 @@ struct Element
         else
         {
             assert( 0, "class not found: " ~ className );
+        }
+    }
+
+
+    void delClass( Class* cls )
+    {
+        assert ( cls !is null );
+
+        if ( classes.has( cls ) )
+        {
+            auto pos = classes.countUntil( cls );
+
+            if ( pos != -1 )
+            {
+                classes.deleteInPlace( pos, pos+1 );
+            }
         }
     }
 

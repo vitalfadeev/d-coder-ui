@@ -6,10 +6,6 @@
 	"license"     : "GPL",
     "dflags"      : [ "-mixin=mixins.d" ],
     "sourcePaths" : [],
-    "dependencies":
-    {
-        "scriptlike"    : { "path" : "./deps/scriptlike" }
-    },
     "configurations" :
     [        
         {

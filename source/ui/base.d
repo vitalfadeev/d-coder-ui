@@ -10,10 +10,10 @@ enum MAX_ELEMENT_CLASSES = 16;
 struct Computed
 {
     // border width
-    int        borderTopWidth;
-    int        borderRightWidth;
-    int        borderBottomWidth;
-    int        borderLeftWidth;
+    POS        borderTopWidth;
+    POS        borderRightWidth;
+    POS        borderBottomWidth;
+    POS        borderLeftWidth;
     // border color
     Color      borderTopColor;
     Color      borderRightColor;
@@ -27,9 +27,14 @@ struct Computed
 
     Color      color;
     Background background;
-    int        width;       // px | by-content: BY_CONTENT = -101 | percent: PERCENT = -1 .. -100
-    int        height;      // px | by-content: BY_CONTENT = -101 | percent: PERCENT = -1 .. -100
+    POS        width;       // px | by-content: BY_CONTENT = -101 | percent: PERCENT = -1 .. -100
+    POS        height;      // px | by-content: BY_CONTENT = -101 | percent: PERCENT = -1 .. -100
     bool       fixed;       // fixed position, relative screen
+
+    POS        marginLeft;
+    POS        marginTop;
+    POS        marginRight;
+    POS        marginBottom;
 
 
     @property

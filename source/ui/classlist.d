@@ -2,6 +2,7 @@ module ui.classlist;
 
 import ui.classregistry : Class;
 import ui.base : MAX_ELEMENT_CLASSES;
+import std.stdio : writeln;
 
 
 struct ClassList
@@ -56,13 +57,8 @@ struct ClassList
 
     size_t countUntil( Class* cls )
     {
-        foreach ( c; lst[ 0 .. length ] )
-        {
-            if ( c == cls )
-                return true;
-        }
-
-        return -1;
+        import std.algorithm : countUntil;
+        return lst[ 0 .. length ].countUntil( cls );
     }
 
     void deleteInPlace( size_t a, size_t b )

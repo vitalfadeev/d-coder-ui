@@ -489,8 +489,7 @@ class OSWindow : IDrawer
                     {
                         //document.body.instanceClass.on( &document.body, event );
 
-                        auto element = findObject( &document.body, Point( 0, 0 ) );
-                        writeln( "WM_LBUTTONDOWN: ", element );
+                        auto element = findObjectAt( &document.body, Point( 0, 0 ) );
                         if ( element !is null )
                         {
                             // class on()
@@ -498,7 +497,6 @@ class OSWindow : IDrawer
                             {
                                 if ( cls.on !is null )
                                 {
-                                    writeln( "WM_LBUTTONDOWN: cls.on: ", cls.name );
                                     cls.on( element, event );
                                 }
                             }
@@ -511,8 +509,7 @@ class OSWindow : IDrawer
                 {
                     if ( document !is null )
                     {
-                        auto element = findObject( &document.body, event.mouseKey.to );
-                        writeln( "WM_LBUTTONDOWN: ", element );
+                        auto element = findObjectAt( &document.body, event.mouseKey.to );
                         if ( element !is null )
                         {
                             writeln( "WM_LBUTTONDOWN: ", *element );
@@ -521,17 +518,15 @@ class OSWindow : IDrawer
                             {
                                 if ( cls.on !is null )
                                 {
-                                    writeln( "WM_LBUTTONDOWN: cls.on: ", cls.name );
                                     cls.on( element, event );
                                 }
                             }
 
                             // element on()
-                            if ( element.instanceClass.on !is null )
-                            {
-                                writeln( "WM_LBUTTONDOWN: element.on: ", element.instanceClass.name );
-                                element.instanceClass.on( element, event );
-                            }
+                            //if ( element.instanceClass.on !is null )
+                            //{
+                            //    element.instanceClass.on( element, event );
+                            //}
                         }
                     }
                     return 0;
@@ -1352,13 +1347,25 @@ void emit( string method, T, ARGS... )( T This, ARGS args )
 
 
 /** */
-auto findObject( Element* root, Point p )
+Element* findObjectAt( Element* root, Point p )
 {
     auto element = root;
+    Element* child;
 
     if ( element.hitTest( p ) )
     {
-        writeln( "hitTest: ok" );
+        // in childs
+        if ( element.firstChild !is null )
+        for ( auto e = element.firstChild; e !is null; e = e.nextSibling )
+        {
+             child = findObjectAt( e, p );
+
+             if ( child !is null )
+             {
+                return child;
+             }
+        }
+
         return element;
     }
 
