@@ -34,6 +34,14 @@ struct Document
 
         return element;
     }
+
+    Element* createElement()
+    {
+        Element* element = new Element();
+        element.addClass!e;
+
+        return element;
+    }
 }
 
 pragma( inline, true )

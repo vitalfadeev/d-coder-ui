@@ -23,12 +23,13 @@ struct ClassRegistry
 
     Class* find( string className )
     {
-        auto cls = className in classes;
+        return classes.get( className, null );
+        //auto cls = className in classes;
 
-        if ( cls is null )
-            return null;
-        else
-            return *cls; // because obj*[string] returns obj**
+        //if ( cls is null )
+        //    return null;
+        //else
+        //    return *cls; // because obj*[string] returns obj**
     }
 }
 

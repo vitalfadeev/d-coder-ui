@@ -463,6 +463,23 @@ class OSWindow : IDrawer
     }
 
 
+    void clipRect( int cx, int cy, int w, int h )
+    {
+        int topLeftX;
+        int topLeftY;
+        topLeftX = _center.x + cx - w/2;
+        topLeftY = _center.y + cy - h/2;
+        BeginPath( _hdc );
+        MoveToEx( _hdc, topLeftX,     topLeftY,     NULL );  // top left
+        MoveToEx( _hdc, topLeftX + w, topLeftY,     NULL );  // top right
+        MoveToEx( _hdc, topLeftX + w, topLeftY + h, NULL );  // bottom right
+        MoveToEx( _hdc, topLeftX,     topLeftY + h, NULL );  // bottom left
+        MoveToEx( _hdc, topLeftX,     topLeftY,     NULL );  // top left. finish
+        EndPath( _hdc );
+        SelectClipPath( _hdc, RGN_AND );
+    }
+
+
     void set()
     {
         //
@@ -1294,6 +1311,21 @@ class BackBuffer : IDrawer
     }
 
 
+    void clipRect( int cx, int cy, int w, int h )
+    {
+        int topLeftX;
+        int topLeftY;
+        topLeftX = _center.x + cx - w/2;
+        topLeftY = _center.y + cy - h/2;
+        BeginPath( _hdc );
+        MoveToEx( _hdc, topLeftX,     topLeftY,     NULL );  // top left
+        LineTo(   _hdc, topLeftX + w, topLeftY     );  // top right
+        LineTo(   _hdc, topLeftX + w, topLeftY + h );  // bottom right
+        LineTo(   _hdc, topLeftX,     topLeftY + h );  // bottom left
+        LineTo(   _hdc, topLeftX,     topLeftY     );  // top left. finish
+        EndPath( _hdc );
+        SelectClipPath( _hdc, RGN_AND );
+    }
 
     void set()
     {

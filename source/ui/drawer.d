@@ -25,6 +25,7 @@ interface IDrawer
     void  lineTo( POS x, POS y );
     void  point( POS x, POS y, Color color );
     void  rectangle( int w, int h );
+    void  clipRect( int cx, int cy, int w, int h );
     void  set();
     void  vid();
     int   on( Event* event ) nothrow;

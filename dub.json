@@ -15,8 +15,14 @@
             "targetName"  : "ui",
             "targetType"  : "library",
             "platforms"   : ["windows"],
-            "versions"    : [ "DoubleBuffer", "LIB" ],
-            "libs"        : [ "user32", "gdi32" ]
+            "versions"    : [ "DoubleBuffer", "LIB", "GLFW_33" ],
+            "libs"        : [ "user32", "gdi32" ],
+            "dependencies":
+            {
+                "bindbc-glfw"  : { "path": "deps/bindbc-glfw-0.13.0" },
+                "bindbc-loader": { "path": "deps/bindbc-loader-master" },
+                "dlib"         : { "path": "deps/dlib" },
+            }
         }
     ]
  }

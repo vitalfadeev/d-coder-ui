@@ -15,8 +15,8 @@ void set_x( Element* element )
 
     // Phase 1
     // Calculate total width
-    auto powerLeft = element.inPowerLeft;
-    auto powerRight = element.inPowerRight;
+    auto magnetLeft = element.computed.magnetInLeft;
+    auto magnetRight = element.computed.magnetInRight;
     size_t spaceCount;
     if ( element.firstChild !is null )
     for ( auto e = element.firstChild; e !is null; e = e.nextSibling )
@@ -24,17 +24,17 @@ void set_x( Element* element )
         totalWidth += e.computed.width;
 
         // ++ | --
-        if ( ( powerLeft > 0 && e.powerLeft > 0 ) || ( powerLeft <= 0 && e.powerLeft <= 0 ) )
+        if ( ( magnetLeft > 0 && e.computed.magnetLeft > 0 ) || ( magnetLeft <= 0 && e.computed.magnetLeft <= 0 ) )
         {
             spaceCount += 1;
         }
 
-        powerLeft = e.powerLeft;
+        magnetLeft = e.computed.magnetLeft;
     }
 
     // Last space
     // ++ | --
-    if ( ( powerLeft > 0 && powerRight > 0 ) || ( powerLeft <= 0 && powerRight <= 0 ) )
+    if ( ( magnetLeft > 0 && magnetRight > 0 ) || ( magnetLeft <= 0 && magnetRight <= 0 ) )
     {
         spaceCount += 1;
     }
@@ -51,17 +51,17 @@ void set_x( Element* element )
         if ( spaceCount > 0 )
             separator =  ( totalFree / spaceCount ).to!POS;
 
-        POS cx = element.centerX - element.computed.width / 2;
+        POS cx = element.computed.centerX - element.computed.width / 2;
 
-        powerLeft  = element.inPowerLeft;
+        magnetLeft  = element.computed.magnetInLeft;
 
         if ( element.firstChild !is null )
         for ( auto e = element.firstChild; e !is null; e = e.nextSibling )
         {
             // +- | -+
-            if ( ( powerLeft > 0 && e.powerLeft <= 0 ) || ( powerLeft <= 0 && e.powerLeft > 0 ) )
+            if ( ( magnetLeft > 0 && e.computed.magnetLeft <= 0 ) || ( magnetLeft <= 0 && e.computed.magnetLeft > 0 ) )
             {
-                e.centerX = cx + e.computed.width / 2;
+                e.computed.centerX = cx + e.computed.width / 2;
                 cx += e.computed.width;
             }
             else
@@ -69,11 +69,11 @@ void set_x( Element* element )
             // ++ | --
             {
                 cx += separator;
-                e.centerX = cx + e.computed.width / 2;
+                e.computed.centerX = cx + e.computed.width / 2;
                 cx += e.computed.width;
             }
 
-            powerLeft = e.powerLeft;
+            magnetLeft = e.computed.magnetLeft;
         }
     }
     else
@@ -88,9 +88,9 @@ void set_x( Element* element )
     // 3 and more
     if ( childsMore3( element ) )
     {
-        // Phase 1. Calc powers
+        // Phase 1. Calc magnets
         POS  totalOffsets = 0;
-        int  totalPower   = 0;
+        int  totalMagnet   = 0;
         POS  totalDistance;
 
         auto cmag = element.firstChild;
@@ -116,25 +116,25 @@ void set_x( Element* element )
             if ( cmag_m > 0 && mag_m > 0 )
             {
                 pwr = cmag_m + mag_m;
-                mag._cd_power  = pwr;
+                mag._cd_magnet  = pwr;
                 mag._cd_offset = 0;
-                totalPower += pwr;
+                totalMagnet += pwr;
             }
 
             else // --
             if ( cmag_m < 0 && mag_m < 0 )
             {
                 pwr = abs( cmag_m + mag_m );
-                mag._cd_power  = pwr;
+                mag._cd_magnet  = pwr;
                 mag._cd_offset = 0;
-                totalPower += pwr;
+                totalMagnet += pwr;
             }
 
             else // +-
             if ( cmag_m >= 0 && mag_m <= 0 )
             {
                 ofs = max( cmag_m, abs( mag_m ) );
-                mag._cd_power  = 0;
+                mag._cd_magnet  = 0;
                 mag._cd_offset = ofs;
                 totalOffsets += ofs;
             }
@@ -143,7 +143,7 @@ void set_x( Element* element )
             if ( cmag_m <= 0 && mag_m >= 0 )
             {
                 ofs = max( abs( cmag_m ), mag_m );
-                mag._cd_power  = 0;
+                mag._cd_magnet  = 0;
                 mag._cd_offset = ofs;
                 totalOffsets += ofs;
             }
@@ -165,11 +165,11 @@ void set_x( Element* element )
                     {
                     foreach ( m; magnets[ cStanIdx+1 .. i+1 ] )
                     {
-                        if ( m._cd_power != 0 )
+                        if ( m._cd_magnet != 0 )
                         {
                             cmag_otd += 
                                 round( 
-                                    ( ( cast( float ) m._cd_power ) / totalPower ) * totalDistance
+                                    ( ( cast( float ) m._cd_magnet ) / totalMagnet ) * totalDistance
                                 ).to!POS;
                             m.otd = cmag_otd;
                         }
@@ -184,7 +184,7 @@ void set_x( Element* element )
                 cStan        = mag;
                 cStanIdx     = i+1;
                 totalOffsets = 0;
-                totalPower   = 0;
+                totalMagnet   = 0;
             } // if stan
 
             cmag = mag;

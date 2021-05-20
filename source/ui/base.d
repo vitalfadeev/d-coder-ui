@@ -9,6 +9,9 @@ enum MAX_ELEMENT_CLASSES = 16;
 
 struct Computed
 {
+    // center, with scroll, relative from parent
+    POS        centerX;  // px, center: relative from the parent center
+    POS        centerY;  // px, center: relative from the parent center
     // border width
     POS        borderTopWidth;
     POS        borderRightWidth;
@@ -25,16 +28,42 @@ struct Computed
     LineStyle  borderBottomStyle;
     LineStyle  borderLeftStyle;
 
+    // color
     Color      color;
     Background background;
+
+    // width, height
     POS        width;       // px | by-content: BY_CONTENT = -101 | percent: PERCENT = -1 .. -100
     POS        height;      // px | by-content: BY_CONTENT = -101 | percent: PERCENT = -1 .. -100
+
+    // position
     bool       fixed;       // fixed position, relative screen
 
+    // margin
     POS        marginLeft;
     POS        marginTop;
     POS        marginRight;
     POS        marginBottom;
+
+    // Magnetic helpers
+    // to childs
+    POWER      magnetInLeft   = 100;
+    POWER      magnetInRight  = 100;
+    POWER      magnetInTop    = 100;
+    POWER      magnetInBottom = 100;
+
+    // to sibling
+    POWER      magnetLeft     = 100;
+    POWER      magnetRight    = 100;
+    POWER      magnetTop      = 100;
+    POWER      magnetBottom   = 100;
+
+    // display
+    DisplayType innerDisplay;
+    DisplayType outerDisplay;
+
+    // box model
+    BoxSizingType boxSizing;
 
 
     @property
@@ -179,20 +208,24 @@ enum LineStyle
     outset
 };
 
+enum DisplayType
+{
+    inline,
+    block,
+    inline_block,
+    flex,
+    grid,
+    magnetic
+};
+
+enum BoxSizingType
+{
+    content_box,
+    border_box,
+};
 
 struct e
 {
+    const
     string name = "e";
-
-    //static
-    //void setter( Element* element )
-    //{
-    //    //
-    //}
-
-    //static
-    //void on( Element* element, Event* event )
-    //{
-    //    //
-    //}
 }

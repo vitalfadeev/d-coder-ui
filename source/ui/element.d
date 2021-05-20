@@ -1,12 +1,14 @@
 module ui.element;
 
 import ui;
-import ui.classlist : ClassList;
-import ui.base      : Computed;
-import ui.base      : Border;
-import ui.base      : memberId;
+import ui.classlist     : ClassList;
+import ui.base          : Computed;
+import ui.base          : Border;
+import ui.base          : memberId;
+import ui.classregistry : registerClass;
 
 
+/** */
 struct Element
 {
     string id;
@@ -30,10 +32,9 @@ struct Element
     // computed properties: default properties + class-level properties + element-level properties
     Computed computed;
 
-    // Magnetic properties
-    POS   centerX;  // px, center: relative from the parent center
-    POS   centerY;  // px, center: relative from the parent center
-    POWER m;        // m-power: -N .. +N
+    // Scrolling
+    POS   scrollLeft;
+    POS   scrollTop;
 
     //
     bool live;  // for delete Mag in array storage and prevent reallocationg storage
@@ -44,16 +45,6 @@ struct Element
     //
     //void delegate( IDrawer drawer ) _vid;
     //bool delegate( Point p        ) _hitTest;
-
-
-    // Magnetic helpers
-    // For fast calculation in set()
-    // ...for prevent memory allocation, reserve space here
-    // ...for useing CPU cache
-    int inPowerLeft  =  100;  // to childs
-    int inPowerRight =  100;  // to childs
-    int powerLeft    =  100;  // to sibling
-    int powerRight   =  100;  // to sibling
 
 
     /** */
@@ -80,25 +71,282 @@ struct Element
     {
         update();
         set();
+        scroll();
         vid_center( drawer );
         vid_border( drawer );
         //drawer.pen( computed.color, computed.borderWidth );
         //drawer.moveTo( 0, 0 );
         //drawer.lineTo( 100, 100 );
+        vid_childs( drawer );
+    }
+
+/*
+    void box_model()
+    {
+        // https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Box_Model/Introduction_to_the_CSS_box_model
+        // https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/The_box_model
+        //
+        final
+        switch ( computed.outerDisplay )
+        {
+            case DisplayType.inline       : inline_box(); break;
+            case DisplayType.block        : block_box(); break;
+            case DisplayType.inline_block : inline_block_box(); break;
+
+            case DisplayType.flex         : break;
+            case DisplayType.grid         : break;
+            case DisplayType.magnetic     : break;
+        }
+
+        Size contentBox;
+        Size paddingBox;
+        Size borderBox;
+        Size marginBox;
+    }
+
+    void block_box()
+    {
+        // https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/The_box_model
+        //
+        // break as NL
+        // extend in inline-direction. space limited by container. size = container size
+        // .width and .height
+        // .padding, .margin, .border - whole box, push away other from box
+
+        POS getWidth()
+        {
+            with ( computed )
+            {
+                // boxModel
+                final
+                switch ( boxSizing )
+                {
+                    // standart
+                    case BoxSizingType.content_box : return standartWidth;
+                    // alternative
+                    case BoxSizingType.border_box  : return alternativeWidth;
+                }
+                
+            }
+        }
+
+        POS standartWidth()
+        {
+            with ( computed )
+            {
+                return 
+                    contentWidth + 
+                    paddingLeft + paddingRight + 
+                    borderLeftWidth + borderRightWidth;
+            }
+        }
+
+        POS alternativeWidth()
+        {
+            with ( computed )
+            {
+                return contentWidth;
+            }
+        }
+
+        POS contentWidth()
+        {
+            // text
+            // image
+            // video player
+            // childs
+            with ( computed )
+            {
+                return width;
+            }
+        }
+    }
+
+    void inline_box()
+    {
+        // https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/The_box_model
+        //
+        // not break line
+        // ignore .width and .height
+        // vertical .padding, .margin, .border applied, but not cause to other boxes
+        // horizontal .padding, .margin, .border push away other from box
+
+        POS getWidth()
+        {
+            with ( computed )
+            {
+                // boxModel
+                final
+                switch ( boxSizing )
+                {
+                    // standart
+                    case BoxSizingType.content_box : return standartWidth;
+                    // alternative
+                    case BoxSizingType.border_box  : return alternativeWidth;
+                }
+                
+            }
+        }
+
+        POS standartWidth()
+        {
+            with ( computed )
+            {
+                return 
+                    contentWidth + 
+                    paddingLeft + paddingRight + 
+                    borderLeftWidth + borderRightWidth;
+            }
+        }
+
+        POS alternativeWidth()
+        {
+            with ( computed )
+            {
+                return contentWidth;
+            }
+        }
+
+        POS contentWidth()
+        {
+            with ( computed )
+            {
+                return getContentWidth();
+            }
+        }
+
+        POS getContentWidth()
+        {
+            // sum childs
+            // text width
+            return 0;
+        }
+    }
+
+    void inline_block_box()
+    {
+        // https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/The_box_model
+        //
+        // not break line
+        // .width and .height
+        // .padding, .margin, .border - whole box, push away other from box
+        POS getWidth()
+        {
+            with ( computed )
+            {
+                // boxModel
+                final
+                switch ( boxSizing )
+                {
+                    // standart
+                    case BoxSizingType.content_box : return standartWidth;
+                    // alternative
+                    case BoxSizingType.border_box  : return alternativeWidth;
+                }
+                
+            }
+        }
+
+        POS standartWidth()
+        {
+            with ( computed )
+            {
+                return 
+                    contentWidth + 
+                    paddingLeft + paddingRight + 
+                    borderLeftWidth + borderRightWidth;
+            }
+        }
+
+        POS alternativeWidth()
+        {
+            with ( computed )
+            {
+                return contentWidth;
+            }
+        }
+
+        POS contentWidth()
+        {
+            with ( computed )
+            {
+                return getContentWidth();
+            }
+        }
+
+        POS getContentWidth()
+        {
+            // sum childs
+            // text width
+            return 0;
+        }
+    }
+
+
+    void normalFlow()
+    {
+        // https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Normal_Flow
+    }
+*/
+
+    pragma( inline, true )
+    void vid_childs( IDrawer drawer )
+    {
+        // set clipping
+        drawer.clipRect( computed.centerX, computed.centerY, computed.width, computed.height );
 
         // childs
         if ( firstChild !is null )
         for ( auto e = firstChild; e !is null; e = e.nextSibling )
         {
-            e.vid( drawer );
+            // in view
+            if ( inView( e ) )
+            {
+                e.vid( drawer );
+            }
         }
+    }
+
+    bool inView( Element* child )
+    {
+        if ( isIntersected( child ) )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    bool isIntersected( Element* child )
+    {
+        POS x1 = computed.centerX - computed.width / 2  + scrollLeft;
+        POS y1 = computed.centerY - computed.height / 2 + scrollTop;
+        POS x2 = x1 + computed.width;
+        POS y2 = y1 + computed.height;
+
+        POS cx1 = child.computed.centerX - child.computed.width / 2;
+        POS cy1 = child.computed.centerY - child.computed.height / 2;
+        POS cx2 = cx1 + child.computed.width;
+        POS cy2 = cy1 + child.computed.height;
+
+        if ( 
+             cx1.between( x1, x2 ) && cy1.between( y1, y2 ) ||
+             cx2.between( x1, x2 ) && cy1.between( y1, y2 ) ||
+             cx2.between( x1, x2 ) && cy2.between( y1, y2 ) ||
+             cx1.between( x1, x2 ) && cy2.between( y1, y2 )
+           )
+        {
+            return true;
+        }
+
+        return false;
     }
 
 
     /** */
     void vid_center( IDrawer drawer )
     {
-        drawer.point( centerX, centerY, computed.color ); // point at: 0, 0 ( center )
+        drawer.point( computed.centerX, computed.centerY, computed.color ); // point at: 0, 0 ( center )
     }
 
 
@@ -113,49 +361,31 @@ struct Element
             if ( computed.borderTopWidth )
             {
                 drawer.pen( computed.borderTopColor, computed.borderTopWidth );
-                drawer.moveTo( centerX + -w, centerY + h );  // left  top
-                drawer.lineTo( centerX +  w, centerY + h );  // right top
+                drawer.moveTo( computed.centerX + -w, computed.centerY + h );  // left  top
+                drawer.lineTo( computed.centerX +  w, computed.centerY + h );  // right top
             }
 
             if ( computed.borderRightWidth )
             {
                 drawer.pen( computed.borderRightColor, computed.borderRightWidth );
-                drawer.moveTo( centerX + w, centerY +  h );  // right top
-                drawer.lineTo( centerX + w, centerY + -h );  // right bottom
+                drawer.moveTo( computed.centerX + w, computed.centerY +  h );  // right top
+                drawer.lineTo( computed.centerX + w, computed.centerY + -h );  // right bottom
             }
 
             if ( computed.borderBottomWidth )
             {
                 drawer.pen( computed.borderBottomColor, computed.borderBottomWidth );
-                drawer.moveTo( centerX +  w, centerY + -h );  // right bottom
-                drawer.lineTo( centerX + -w, centerY + -h );  // left  bottom
+                drawer.moveTo( computed.centerX +  w, computed.centerY + -h );  // right bottom
+                drawer.lineTo( computed.centerX + -w, computed.centerY + -h );  // left  bottom
             }
             
             if ( computed.borderLeftWidth )
             {
                 drawer.pen( computed.borderLeftColor, computed.borderLeftWidth );
-                drawer.moveTo( centerX + -w, centerY + -h );  // left bottom
-                drawer.lineTo( centerX + -w, centerY +  h );  // left top
+                drawer.moveTo( computed.centerX + -w, computed.centerY + -h );  // left bottom
+                drawer.lineTo( computed.centerX + -w, computed.centerY +  h );  // left top
             }
         }
-    }
-
-
-    /** */
-    void vid_border_mag( IDrawer drawer )
-    {
-        drawer.moveTo( 0, 0 );  // center
-
-        // m
-        if ( m == 0 )
-            drawer.pen( 0xCCCCCC.rgb, 3 );
-        else
-        if ( m < 0 )
-            drawer.pen( 0x0000CC.rgb, 3 );
-        else // c > 0
-            drawer.pen( 0xCC0000.rgb, 3 );
-
-        drawer.rectangle( m+m, m+m );
     }
 
 
@@ -172,8 +402,8 @@ struct Element
     bool hitTest( Point p )
     {
         return 
-            ( abs( p.x - centerX ) <= abs( computed.width / 2 ) ) &&
-            ( abs( p.y - centerY ) <= abs( computed.height / 2 ) );
+            ( abs( p.x - computed.centerX ) <= abs( computed.width / 2 ) ) &&
+            ( abs( p.y - computed.centerY ) <= abs( computed.height / 2 ) );
     }
 
 
@@ -191,12 +421,14 @@ struct Element
     }
 
 
+    pragma( inline, true )
     void resetToDefault()
     {
         computed = Computed.init;
     }
 
 
+    pragma( inline, true )
     void applyClassMembers()
     {
         foreach ( cls; classes )
@@ -209,12 +441,26 @@ struct Element
     }
 
 
+    pragma( inline, true )
     void applyElementMembers()
     {
         if ( instanceClass.setter !is null )
         {
             instanceClass.setter( &this );  // call setClassMembers( T )( Element* this )
         }
+    }
+
+    pragma( inline, true )
+    void scroll()
+    {
+        if ( parentNode )
+        {
+            with ( computed )
+            {
+                computed.centerX -= parentNode.scrollLeft;
+                computed.centerY += parentNode.scrollTop;
+            }
+        }        
     }
 
 
@@ -524,3 +770,17 @@ struct Element
     }
 }
 
+
+// Element class
+struct e
+{
+    string name = "e";
+    //void setter( Element* element );
+    //void on( Element* element, Event* event );
+}
+
+static
+this()
+{
+    registerClass!e();
+}
