@@ -17,10 +17,16 @@ struct DocumentHead
     DocumentMeta meta;
 }
 
+//struct HtmlDocumentElement
+//{
+//    //
+//}
+
 struct Document
 {
     DocumentHead head;
     Element      body;
+    Element*     documentElement; // html element, root element
 
     Element* createElement( string tagName )
     {
@@ -41,6 +47,30 @@ struct Document
         element.addClass!e;
 
         return element;
+    }
+
+    /** */
+    string characterSet()
+    {
+        return "UTF-8";
+    }
+
+    /** */
+    CompatMode compatMode()
+    {
+        return CompatMode.CSS1Compat;
+    }
+
+    /** */
+    string contentType()
+    {
+        return "text/html";
+    }
+
+    /** */
+    void doctype()
+    {
+        //
     }
 }
 
@@ -152,3 +182,10 @@ struct AppDocument
 }
 
 */
+
+enum CompatMode
+{
+    CSS1Compat,
+    BackCompat
+}
+

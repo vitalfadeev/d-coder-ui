@@ -3,8 +3,9 @@ module ui.base;
 import ui;
 import std.json;
 
-enum MAX_CLASSES = 255;
+enum MAX_CLASSES = size_t.sizeof * 8; // for x86_64 = 64
 enum MAX_ELEMENT_CLASSES = 16;
+alias size_t ClassId;
 
 
 struct Computed
@@ -12,6 +13,16 @@ struct Computed
     // center, with scroll, relative from parent
     POS        centerX;  // px, center: relative from the parent center
     POS        centerY;  // px, center: relative from the parent center
+
+    // position
+    Position   position;
+
+    //
+    POS        top;
+    POS        left;
+    POS        bottom;
+    POS        right;
+
     // border width
     POS        borderTopWidth;
     POS        borderRightWidth;
@@ -45,6 +56,12 @@ struct Computed
     POS        marginRight;
     POS        marginBottom;
 
+    // padding
+    POS        paddingLeft;
+    POS        paddingTop;
+    POS        paddingRight;
+    POS        paddingBottom;
+
     // Magnetic helpers
     // to childs
     POWER      magnetInLeft   = 100;
@@ -59,11 +76,11 @@ struct Computed
     POWER      magnetBottom   = 100;
 
     // display
-    DisplayType innerDisplay;
-    DisplayType outerDisplay;
+    Display    innerDisplay;
+    Display    outerDisplay;
 
     // box model
-    BoxSizingType boxSizing;
+    BoxSizing   boxSizing;
 
 
     @property
@@ -208,21 +225,62 @@ enum LineStyle
     outset
 };
 
-enum DisplayType
+enum Display
 {
+    // outside
     inline,
     block,
-    inline_block,
+    run_in,
+    // inside
+    flow,
+    flow_root,
+    table,
     flex,
     grid,
+    ruby,
+    // listitem
+    list_item,
+    // box
+    contents,
+    none,
+    // internal
+    table_row_group,
+    table_header_group,
+    table_footer_group,
+    table_row,
+    table_cell,
+    table_column_group,
+    table_column,
+    table_caption,
+    ruby_base,
+    ruby_text,
+    ruby_base_container,
+    ruby_text_container,
+    // legacy
+    inline_block,
+    inline_list_item,
+    inline_table,
+    inline_flex,
+    inline_grid,
+    // magnetic
     magnetic
 };
 
-enum BoxSizingType
+enum BoxSizing
 {
     content_box,
     border_box,
 };
+
+// position
+enum Position
+{
+    static_,
+    relative,  // left, top, right, bottom of flow position
+    absolute,  // left, top, right, bottom of parent element. Own layer: z-index. Width = right - left, Height =bottom - top. margin applied. 
+    fixed,     // left, top, right, bottom of viewport
+    sticky,    // left, top, right, bottom of viewport. When scrolling then "fixed", else "static".
+}
 
 struct e
 {

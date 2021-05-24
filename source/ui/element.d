@@ -61,6 +61,40 @@ struct Element
     }
 
 
+    bool isPositioned()
+    {
+        return 
+            computed.position == Position.relative || 
+            computed.position == Position.absolute || 
+            computed.position == Position.fixed ||
+            computed.position == Position.sticky;
+    }
+
+    bool isReltivePositioned()
+    {
+        return computed.position == Position.relative;
+    }
+
+    bool isAbsolutePositioned()
+    {
+        return 
+            computed.position == Position.absolute ||
+            computed.position == Position.fixed;
+    }
+
+    bool isStickyPositioned()
+    {
+        return computed.position == Position.sticky;
+    }
+
+    void wh()
+    {
+        // position: absolute 
+        //   width  = auto = content width
+        //   height = auto = content height
+    }
+
+
     void set()
     {
         import ui.setmagnetic : set_magnetic;
@@ -122,9 +156,9 @@ struct Element
                 switch ( boxSizing )
                 {
                     // standart
-                    case BoxSizingType.content_box : return standartWidth;
+                    case BoxSizing.content_box : return standartWidth;
                     // alternative
-                    case BoxSizingType.border_box  : return alternativeWidth;
+                    case BoxSizing.border_box  : return alternativeWidth;
                 }
                 
             }
@@ -180,9 +214,9 @@ struct Element
                 switch ( boxSizing )
                 {
                     // standart
-                    case BoxSizingType.content_box : return standartWidth;
+                    case BoxSizing.content_box : return standartWidth;
                     // alternative
-                    case BoxSizingType.border_box  : return alternativeWidth;
+                    case BoxSizing.border_box  : return alternativeWidth;
                 }
                 
             }
@@ -239,9 +273,9 @@ struct Element
                 switch ( boxSizing )
                 {
                     // standart
-                    case BoxSizingType.content_box : return standartWidth;
+                    case BoxSizing.content_box : return standartWidth;
                     // alternative
-                    case BoxSizingType.border_box  : return alternativeWidth;
+                    case BoxSizing.border_box  : return alternativeWidth;
                 }
                 
             }
@@ -351,6 +385,13 @@ struct Element
 
 
     /** */
+    void vid_margin( IDrawer drawer )
+    {
+        //auto marginArea = boxModel_marginArea;
+        // drawer.rectangleFilled( marginArea.left, marginArea.top, marginArea.right, marginArea.bottom, 0x333333.rgb );
+    }
+
+    /** */
     void vid_border( IDrawer drawer )
     {
         auto w = computed.width / 2;
@@ -388,6 +429,19 @@ struct Element
         }
     }
 
+    /** */
+    void vid_pading( IDrawer drawer )
+    {
+        //auto paddingArea = boxModel_paddingArea;
+        //drawer.rectangleFilled( paddingArea.left, paddingArea.top, paddingArea.right, paddingArea.bottom, 0x888888.rgb );
+    }
+
+    /** */
+    void vid_content( IDrawer drawer )
+    {
+        //auto contentArea = boxModel_contentArea;
+        //drawer.rectangleFilled( contentArea.left, contentArea.top, contentArea.right, contentArea.bottom, 0xCCCCCC.rgb );
+    }
 
     /** */
     void vid_symbol( IDrawer drawer )
@@ -396,6 +450,60 @@ struct Element
         drawer.moveTo( 0, 0 );  // center
         //drawer.symbol( 'A', m, -( cast( int ) m )/2, m, m/2 );
     }
+
+    //Rect boxModel_marginArea()
+    //{
+    //    with ( computed )
+    //    {
+    //        auto l = centerX - contentLeft   - paddingLeft   - borderLeftWidth   - marginLeft  ;
+    //        auto t = centerY - contentTop    - paddingTop    - borderTopWidth    - marginTop   ;
+    //        auto r = centerX + contentRight  + paddingRight  + borderRightWidth  + marginRight ;
+    //        auto b = centerY + contentBottom + paddingBottom + borderBottomWidth + marginBottom;
+    //    }
+
+    //    return Rect( l, t, r ,b );
+    //}
+
+    //Rect boxModel_borderArea()
+    //{
+    //    with ( computed )
+    //    {
+    //        auto l = centerX - contentLeft   - paddingLeft   - borderLeftWidth  ;
+    //        auto t = centerY - contentTop    - paddingTop    - borderTopWidth   ;
+    //        auto r = centerX + contentRight  + paddingRight  + borderRightWidth ;
+    //        auto b = centerY + contentBottom + paddingBottom + borderBottomWidth;
+    //    }
+
+    //    return Rect( l, t, r ,b );
+    //}
+
+    //Rect boxModel_paddingArea()
+    //{
+    //    with ( computed )
+    //    {
+    //        auto l = centerX - contentLeft   - paddingLeft  ;
+    //        auto t = centerY - contentTop    - paddingTop   ;
+    //        auto r = centerX + contentRight  + paddingRight ;
+    //        auto b = centerY + contentBottom + paddingBottom;
+    //    }
+
+    //    return Rect( l, t, r ,b );
+    //}
+
+    //Rect boxModel_contentArea()
+    //{
+    //    with ( computed )
+    //    {
+    //        // renderWidth;
+    //        // renderHeight;
+    //        auto l = centerX - contentLeft  ;
+    //        auto t = centerY - contentTop   ;
+    //        auto r = centerX + contentRight ;
+    //        auto b = centerY + contentBottom;
+    //    }
+
+    //    return Rect( l, t, r ,b );
+    //}
 
 
     /** */
@@ -629,6 +737,59 @@ struct Element
         }
     }
 
+version ( ClassList2 )
+{
+    bool hasClass( ClassId classId )
+    {
+        return classes.has( classId );
+    }
+
+    bool hasClass( T )()
+          if ( is( T == struct ) )
+    {
+        return hasClass( T.init.classId );
+    }
+
+    void addClass( ClassId classId )
+    {
+        classes.add( classId );
+    }
+
+    void addClass( T )()
+          if ( is( T == struct ) )
+    {
+        addClass( T.init.classId );
+    }
+
+    void delClass( ClassId classId )
+    {
+        classes.remove( classId );
+    }
+
+    void delClass( T )()
+          if ( is( T == struct ) )
+    {
+        delClass( T.init.classId );
+    }
+
+    void toggleClass( ClassId classId )
+    {
+        if ( classes.hasClass( classId ) )
+            classes.delClass( classId );
+        else
+            classes.addClass( classId );
+    }
+
+    void toggleClass( T )()
+          if ( is( T == struct ) )
+    {
+        if ( hasClass!T )
+            delClass!classId;
+        else
+            addClass!classId;
+    }
+}
+
 
     // Properties
     /** */
@@ -784,3 +945,4 @@ this()
 {
     registerClass!e();
 }
+

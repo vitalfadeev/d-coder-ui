@@ -86,3 +86,85 @@ struct ClassList
 }
 
 
+version ( ClassList2 )
+{
+    import ui.base : ClassId;
+    import ui.classregistry : classReg2;
+
+    struct ClassList2
+    {
+        ClassId classes; // bitset. for x86_64 = 64
+        size_t orderLength;
+        ubyte[ MAX_ELEMENT_CLASSES ] order;
+
+        bool has( ClassId classId )
+        {
+            return ( classes & classId ) != 0;
+        }
+
+        bool has( T )()
+          if ( is( T == struct ) )
+        {
+            return has( T.init.classId );
+        }
+
+        void opOpAssign( string op : "~" )( ClassId classId )
+        {
+            add( classId );
+        }
+
+        void add( ClassId classId )
+        {
+            remove( classId );
+
+            classes |= classId;
+
+            order[ orderLength ] = classId;
+            orderLength += 1;
+        }
+
+        void add( T )()
+          if ( is( T == struct ) )
+        {
+            add( T.init.classId );
+        }
+
+        void remove( ClassId classId )
+        {
+            import std.algorithm : countUntil;
+     
+            if ( has( classId ) )
+            {
+                auto pos = order[ 0 .. orderLength ].countUntil( classId );
+
+                order[ pos .. orderLength-1 ] = order[ pos+1 .. orderLength ];
+                orderLength -= 1;
+
+                classes &= classId;
+            }
+        }
+
+        void remove( T )()
+          if ( is( T == struct ) )
+        {
+            remove( T.init.classId );
+        }
+
+        int opApply( int delegate( ref Class ) dg )
+        {
+            int result = 0;
+
+            foreach ( ref clsId; order[ 0 .. orderLength ] )
+            {
+                result = dg( classReg2.classes[ clsId ] );
+
+                if ( result ) 
+                {
+                    break;
+                }
+            }
+
+            return result;
+        }
+    }
+}

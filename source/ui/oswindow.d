@@ -1230,6 +1230,31 @@ class BackBuffer : IDrawer
     }
 
 
+    //void rectangleFilled( Rect* rect, Color color )
+    //{
+    //    import std.math : abs;
+
+    //    // Center ot the Vid
+    //    Point cen = this.center;
+
+    //    // Fill Mode
+    //    auto brush = CreateSolidBrush( color.windowsCOLORREF );
+    //    auto oldBrush = SelectObject( _hdc, brush ); 
+
+    //    Rectangle( 
+    //        _hdc, 
+    //        cen.x + l, 
+    //        cen.y + t, 
+    //        cen.x + r, 
+    //        cen.y + b 
+    //    );
+
+    //    // 
+    //    SelectObject( _hdc, oldBrush ); 
+    //    DeleteObject( brush);            
+    //}
+
+
     void triangleFromCenterFilled( Point p1, Point p2, Color color )
     {
         // center
