@@ -418,3 +418,6 @@ Properties has units, like a CSS
 width = 1.px;
 ```
 
+### Render
+
+![dlang-ui-gl.png](docs/dlang-ui-gl.png)
