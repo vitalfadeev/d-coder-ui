@@ -5,7 +5,18 @@ Example: [https://github.com/vitalfadeev/d-coder-ui-sample](https://github.com/v
 
 Radmap: [roadmap.md](roadmap.md)
 
+
 ## Details
+
+### Render
+
+![dlang-ui-gl.png](docs/dlang-ui-gl.png)
+
+### Demo
+
+![demo.gif](docs/demo.gif)
+
+![d-coder-ui-sample-RAM.png](docs/d-coder-ui-sample-RAM.png)
 
 ### Main idea
 
@@ -417,15 +428,4 @@ Properties has units, like a CSS
 // width: 1px
 width = 1.px;
 ```
-
-### Render
-
-![dlang-ui-gl.png](docs/dlang-ui-gl.png)
-
-### Demo
-
-![demo.gif](docs/demo.gif)
-
-![d-coder-ui-sample-RAM.png](docs/d-coder-ui-sample-RAM.png)
-
 
