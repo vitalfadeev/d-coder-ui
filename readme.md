@@ -424,7 +424,7 @@ width = 1.px;
 
 ### Demo
 
-![demo.png](docs/demo.png)
+![demo.gif](docs/demo.gif)
 
 ![d-coder-ui-sample-RAM.png](docs/d-coder-ui-sample-RAM.png)
 
