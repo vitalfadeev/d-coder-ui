@@ -5,6 +5,8 @@ Example: [https://github.com/vitalfadeev/d-coder-ui-sample](https://github.com/v
 
 ## Details
 
+Radmap: [roadmap.md](roadmap.md)
+
 ### Main idea
 
 Take UI definition, convert to native D code, then D code compile to binary.
