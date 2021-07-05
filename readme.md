@@ -16,6 +16,8 @@ Radmap: [roadmap.md](roadmap.md)
 
 ![demo.gif](docs/demo.gif)
 
+### Memory usage
+
 ![d-coder-ui-sample-RAM.png](docs/d-coder-ui-sample-RAM.png)
 
 ### Document
@@ -26,9 +28,9 @@ Radmap: [roadmap.md](roadmap.md)
 
 ![d-ui-element.png](docs/d-ui-element.png)
 
-### Main idea
+### UI markup
 
-Take UI definition, convert to native D code, then D code compile to binary.
+Main idea is... Take UI definition, convert to native D code, then D code compile to binary.
 
 Next UI definition
 __app.t__
