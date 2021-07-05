@@ -24,7 +24,7 @@ Radmap: [roadmap.md](roadmap.md)
 
 ### Element
 
-![d-ui-element-dom.png](docs/d-ui-element-dom.png)
+![d-ui-element.png](docs/d-ui-element.png)
 
 ### Main idea
 
