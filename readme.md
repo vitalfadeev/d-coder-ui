@@ -28,9 +28,9 @@ Radmap: [roadmap.md](roadmap.md)
 
 ![d-ui-element.png](docs/d-ui-element.png)
 
-### UI markup
+### Main idea
 
-Main idea is... Take UI definition, convert to native D code, then D code compile to binary.
+Take UI definition, convert to native D code, then D code compile to binary.
 
 Next UI definition
 __app.t__
