@@ -1,7 +1,10 @@
 module ui.color;
 
+version (windows)
 import core.sys.windows.windows : COLORREF;
+version (windows)
 import core.sys.windows.windows : RGB;
+
 import std.format               : format;
 import std.stdio                : writefln;
 
@@ -17,6 +20,7 @@ struct Color
             ubyte g;
             ubyte b;
         }
+version (windows)
         COLORREF windowsCOLORREF;
     }
     ubyte a = 0xFF; // 0x00 - transparent, 0xFF - opaque
@@ -36,6 +40,7 @@ struct Color
     }   
 
 
+    version ( window )
     pragma( inline )
     void opAssign( uint a )
     {
@@ -43,6 +48,7 @@ struct Color
     }
 
 
+version (windows)
     COLORREF opCast( T : COLORREF )()
     {
         return windowsCOLORREF;

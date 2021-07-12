@@ -1,6 +1,8 @@
 module ui.tools;
 
+version ( windows )
 import core.sys.windows.windows;
+
 import std.conv  : to;
 import std.stdio : writeln;
 import std.stdio : writefln;
@@ -92,12 +94,14 @@ T min( T )( T a, T b , T c ) nothrow
 }
 
 
+version ( windows )
 int GET_X_LPARAM( LPARAM lp ) nothrow
 {
     return cast( int ) cast( short )LOWORD( lp );
 }
 
 
+version ( windows )
 int GET_Y_LPARAM( LPARAM lp ) nothrow
 {
     return cast( int ) cast( short )HIWORD( lp );

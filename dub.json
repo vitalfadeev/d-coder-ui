@@ -6,24 +6,44 @@
 	"license"     : "GPL",
     "dflags"      : [ "-mixin=mixins.d" ],
     "sourcePaths" : [],
-    "configurations" :
-    [        
+    "configurations": 
+    [
         {
-            "name"        : "lib",
+            "name"        : "windows",
+            "platforms"   : ["windows"],
             "sourcePaths" : [ "source" ],
             "targetPath"  : "lib",
             "targetName"  : "ui",
             "targetType"  : "library",
-            "platforms"   : ["windows"],
-            "versions"    : [ "DoubleBuffer", "LIB", "GLFW_33" ],
+            "versions"    : [ "DoubleBuffer", "LIB", "GLFW_33", "GL_33" ],
             "libs"        : [ "user32", "gdi32" ],
             "dependencies":
             {
-                "bindbc-glfw"  : { "path": "deps/bindbc-glfw-0.13.0" },
-                "bindbc-loader": { "path": "deps/bindbc-loader-master" },
+                "bindbc-glfw"  : { "path": "deps/bindbc-glfw" },
+                "bindbc-loader": { "path": "deps/bindbc-loader" },
                 "dlib"         : { "path": "deps/dlib" },
+                "glfw-d"       : { "path": "deps/glfw-d" },
+            }
+        },
+        {
+            "name"        : "linux",
+            "platforms"   : ["linux"],
+            "sourcePaths" : [ "source" ],
+            "targetPath"  : "lib",
+            "targetName"  : "ui",
+            "targetType"  : "library",
+            "versions"    : [ "DoubleBuffer", "LIB", "GLFW", "GLFW_33", "GL_33" ],
+            "dependencies":
+            {
+                "bindbc-glfw"   : { "path": "deps/bindbc-glfw" },
+                "bindbc-opengl" : { "path": "deps/bindbc-opengl" },
+                "glfw-d"        : { "path": "deps/glfw-d" },
             }
         }
+    ],
+
+    "subPackages": 
+    [
+        "./tools/d-coder-ui-tools"
     ]
- }
- 
+}

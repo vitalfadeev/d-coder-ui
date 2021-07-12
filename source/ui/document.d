@@ -1,6 +1,8 @@
 module ui.document;
 
-import ui;
+import ui.nodelist : NodeList;
+import ui.element  : Element;
+import std.stdio   : writeln;
 
 
 struct DocumentMeta
@@ -35,7 +37,7 @@ struct Document
         if ( tagName == "e" )
         {
             element = .createElement!Element();
-            element.addClass!e;
+            //element.addClass!e;
         }
 
         return element;
@@ -44,7 +46,7 @@ struct Document
     Element* createElement()
     {
         Element* element = new Element();
-        element.addClass!e;
+        //element.addClass!e;
 
         return element;
     }
@@ -71,6 +73,12 @@ struct Document
     void doctype()
     {
         //
+    }
+
+    /** */
+    Element* querySelector( string selector )
+    {
+        return body.querySelector( selector );
     }
 }
 

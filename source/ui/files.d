@@ -6,8 +6,8 @@ import ui;
 /** */
 enum : uint
 {
-    FIND_FIRST_EX_CASE_SENSITIVE = 1,
-    FIND_FIRST_EX_LARGE_FETCH = 2,
+    FIND_FIRST_EX_CASE_SENSITIVE       = 1,
+    FIND_FIRST_EX_LARGE_FETCH          = 2,
     FIND_FIRST_EX_ON_DISK_ENTRIES_ONLY = 4
 }
 
@@ -78,11 +78,22 @@ class Files
 }
 
 /** */
-class File
+version ( windows )
 {
-    import core.sys.windows.windows : WIN32_FIND_DATAW;
+    class File
+    {
+        import core.sys.windows.windows : WIN32_FIND_DATAW;
 
-    WIN32_FIND_DATAW data;
-    int x;
+        WIN32_FIND_DATAW data;
+        int x;
+    }
+}
+else
+{
+    class File
+    {
+        ubyte[255] data;
+        int x;
+    }
 }
 

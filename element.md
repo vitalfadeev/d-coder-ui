@@ -51,6 +51,7 @@ position
 hidden
 tabIndex
 zIndex
+id
 ```
 
 ## Computed Properties
@@ -86,6 +87,7 @@ computed
   hidden
   tabIndex
   zIndex
+  type
 ```
 
 ## Tree Properties
@@ -140,4 +142,38 @@ Element
 -------
 classes
 ```
+
+### display
+- none
+- block
+- inline
+- inline-block
+- grid
+- flex
+- window - create OS window, draw content in window, window size is (width x height)
+
+
+### type
+- button
+- checkbox
+- color
+- date
+- datetime-local
+- email
+- file
+- hidden
+- image
+- month
+- number
+- password
+- radio
+- range
+- reset
+- search
+- submit
+- tel
+- text
+- time
+- url
+- week 
 

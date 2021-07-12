@@ -12,6 +12,7 @@ struct Size
             int w;
             int h;
         }
+version (windows)
         SIZE windowsSIZE;
     }
 }

@@ -3,8 +3,8 @@ module ui.classregistry;
 import std.stdio  : writeln;
 import ui.element : Element;
 import ui.event   : Event;
-import ui.base : MAX_CLASSES;
-import ui.base : ClassId;
+import ui.base    : MAX_CLASSES;
+import ui.base    : ClassId;
 
 
 ClassRegistry classRegistry;

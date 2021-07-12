@@ -12,6 +12,7 @@ struct Point
             int x;
             int y;
         }
+version (windows)
         POINT windowsPOINT;
     }
 

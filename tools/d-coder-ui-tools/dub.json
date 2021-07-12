@@ -1,0 +1,33 @@
+{
+	"name"        : "d-coder-ui-tool",
+	"authors"     : [ "Vital Radeev" ],
+	"copyright"   : "Copyright © 2021, Vital Radeev",
+	"description" : "D UI tool",
+	"license"     : "GPL",
+    "dflags"      : [ "-mixin=mixins.d" ],
+    "targetPath"  : "bin",
+    "targetName"  : "t-convertor",
+    "targetType"  : "executable",
+    "dependencies":
+    {
+        "d-coder-ui" : { "path" : "../.." }
+    },
+    "configurations": [
+        {
+            "name"       : "windows",
+            "platforms"  : ["windows"],
+            "preGenerateCommands":
+            [
+                 "start /wait cmd /C IF EXIST source\\generated rmdir /q /s source\\generated",
+            ],
+        },
+        {
+            "name"       : "linux",
+            "platforms"  : ["linux"],
+            "preGenerateCommands":
+            [
+                 "bash -c '[ source/generated ] && rm -Rf source/generated'",
+            ],
+        }
+    ]
+}

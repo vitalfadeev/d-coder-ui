@@ -1,43 +1,158 @@
 module ui.element;
 
-import ui;
-import ui.classlist     : ClassList;
-import ui.base          : Computed;
+import std.meta         : AliasSeq;
 import ui.base          : Border;
+import ui.color         : Color;
+import ui.base          : Computed;
+import ui.base          : LineStyle;
 import ui.base          : memberId;
+import ui.base          : POS;
+import ui.classlist     : ClassList;
+import ui.classregistry : Class;
 import ui.classregistry : registerClass;
+import ui.cssvalue      : CSSValue;
+import ui.event         : Event;
+import ui.nodelist      : NodeList;
+import ui.point         : Point;
+import ui.rendercontext : RenderContext;
+import ui.window        : Window;
+import ui.base          : Position;
+import ui.tools         : between;
+import std.math         : abs;
+import ui.classregistry : classRegistry;
+import std.stdio        : writeln;
+import ui.childslist    : ChildsList;
 
 
 /** */
 struct Element
 {
-    string id;
+    // Properties
+    // textContent
+    string textContent;
+    // background
+    //   [ <bg-layer> , ]* <final-bg-layer>
+    //   where 
+    //     <bg-layer> = <bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <box> || <box>
+    //     <final-bg-layer> = <'background-color'> || <bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <box> || <box>
+    CSSValue background;
+    // border
+    void border( string s )        { /* parse s, set borderWidth, borderStyle, borderColor */ }
+    void border( POS w )           { /* parse s, set borderWidth, borderStyle, borderColor */ }
+    void border( LineStyle style ) { /* parse s, set borderWidth, borderStyle, borderColor */ }
+    void border( Color c )         { /* parse s, set borderWidth, borderStyle, borderColor */ }
+    // border width
+    //   <length> | thin | medium | thick | initial | revert | unset
+    CSSValue borderTopWidth;
+    CSSValue borderRightWidth;
+    CSSValue borderBottomWidth;
+    CSSValue borderLeftWidth;
+    // border Style
+    //   <line-style> = none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset | initial | revert | unset
+    CSSValue borderTopStyle;
+    CSSValue borderRightStyle;
+    CSSValue borderBottomStyle;
+    CSSValue borderLeftStyle;
+    // border color
+    //   <color> = <rgb()> | <rgba()> | <hsl()> | <hsla()> | <hex-color> | <named-color> | currentcolor | <deprecated-system-color> | initial | revert | unset
+    CSSValue borderTopColor;
+    CSSValue borderRightColor;
+    CSSValue borderBottomColor;
+    CSSValue borderLeftColor;
+    // bottom
+    //   <length> | <percentage> | auto
+    CSSValue bottom;
+    // color
+    //   <color> = <rgb()> | <rgba()> | <hsl()> | <hsla()> | <hex-color> | <named-color> | currentcolor | <deprecated-system-color> | initial | revert | unset
+    CSSValue color;
+    // display
+    //   [ <display-outside> || <display-inside> ] | <display-listitem> | <display-internal> | <display-box> | <display-legacy>
+    CSSValue display;
+    // height
+    //   auto | <length> | <percentage> | min-content | max-content | fit-content | fit-content(<length-percentage>)
+    CSSValue height;
+    // hidden
+    //   visible | hidden | collapse
+    CSSValue hidden;
+    // id
+    string   id;
+    // image
+    //   string | Image
+    CSSValue image;
+    // left
+    //   <length> | <percentage> | auto
+    CSSValue left;
+    // margin
+    void margin( string s ) {}
+    CSSValue marginLeft;
+    CSSValue marginTop;
+    CSSValue marginRight;
+    CSSValue marginBottom;
+    // padding
+    void padding( string s ) {}
+    CSSValue paddingLeft;
+    CSSValue paddingTop;
+    CSSValue paddingRight;
+    CSSValue paddingBottom;
+    //
+    CSSValue position;
+    // right
+    //   <length> | <percentage> | auto
+    CSSValue right;
+    // tabIndex
+    int      tabIndex;
+    // top
+    //   <length> | <percentage> | auto
+    CSSValue top;
+    // width
+    //   auto | <length> | <percentage> | min-content | max-content | fit-content | fit-content(<length-percentage>)
+    CSSValue width;
+    // z-index
+    //   auto | <integer>
+    CSSValue zIndex;
 
     // Node properties
-    Element* parentNode;
-    Element* prevSibling;
-    Element* nextSibling;
-    Element* firstChild;
-    Element* lastChild;
+    union {
+        struct {
+            Element* parentNode;
+            Element* prevSibling;
+            Element* nextSibling;
+            Element* firstChild;
+            Element* lastChild;
+        };
+        ChildsList children;
+        //ChildsList child;
+    }
 
     // Draw properties
     // classes
     ClassList classes;
 
-    // Element Instance Class
-    // void function( Element* element ) setter;
-    // void function( Ekement* element, Event* event ) on;
-    Class instanceClass = { name: "e" };
-
-    // computed properties: default properties + class-level properties + element-level properties
+    //
+    // Computed properties
+    //   default properties + class-level properties + element-level properties
     Computed computed;
 
+    // Event Handlers
+    EventHandler onload;
+    EventHandler onclick;
+
+    // setter assigned to the Element
+    void function( Element* element ) setter;
+    void function( Element* element, Event* event ) on;
+
+    //
+    // Window
+    //   for display = window
+    Window* window;
+
+    //
     // Scrolling
     POS   scrollLeft;
     POS   scrollTop;
 
     //
-    bool live;  // for delete Mag in array storage and prevent reallocationg storage
+    bool  live;  // for delete Mag in array storage and prevent reallocationg storage
 
     //
     void* data; // payload
@@ -87,32 +202,100 @@ struct Element
         return computed.position == Position.sticky;
     }
 
-    void wh()
+    /** 
+     * ctx: CanvasRenderingContext2D
+     */
+    void draw( RenderContext* ctx )
     {
-        // position: absolute 
-        //   width  = auto = content width
-        //   height = auto = content height
+        draw_border( ctx );
+        draw_text( ctx );
+    }
+
+    //private
+    void draw_border( RenderContext* ctx )
+    {
+        //
+    }
+
+    /** 
+     * ctx: CanvasRenderingContext2D
+     */
+    //private
+    void draw_text( RenderContext* ctx )
+    {
+        /*
+        // offset RenderContext in Document. 
+        // Element -> | (x,y) transform | -> RenderContext -> Window
+        RenderContextCoordTransformator tr;
+        tr.rect = ctx.rectInDocument;
+        Rect eRect = tr.transform( computed.absoluteRect ); // Element rect in Rendercontext coords
+
+        // set clipping
+        auto region = new Path2D();
+        region.rect( 
+            eRect.left, 
+            eRect.top, 
+            eRect.right  - eRect.left, 
+            eRect.bottom - eRect.top );
+        ctx.clip( region );
+
+        // draw text ( clipped )
+        ctx.fillText( 
+            _textContent, 
+            eRect.left, 
+            eRect.top );
+        */
     }
 
 
-    void set()
+    /** */
+    Element* querySelector( string selector )
     {
-        import ui.setmagnetic : set_magnetic;
-        set_magnetic( &this );
+        import std.string : strip;
+
+        auto cleaned_selector = selector.strip( ". ", " " );
+
+        return selectByClass( cleaned_selector );
     }
 
-    void vid( IDrawer drawer )
+
+    /** */
+    NodeList querySelectorAll( string selector )
     {
-        update();
-        set();
-        scroll();
-        vid_center( drawer );
-        vid_border( drawer );
-        //drawer.pen( computed.color, computed.borderWidth );
-        //drawer.moveTo( 0, 0 );
-        //drawer.lineTo( 100, 100 );
-        vid_childs( drawer );
+        import std.string : strip;
+
+        auto cleaned_selector = selector.strip( ". ", " " );
+
+        return selectByClassAll( cleaned_selector );
     }
+
+
+    /** */
+    //string textContent()
+    //{
+    //    return "";
+    //}
+
+    /** */
+    // element.text = "1";
+    // element.text = true;
+    // element.text = 1;
+    // element.text = -1;
+    // element.text = 1.0;
+    //void textContent( string s )
+    //{
+    //    _textContent = s;
+    //}
+    //static
+    //foreach( T; AliasSeq!( bool, byte, ubyte, short, ushort, int, uint, long, ulong, float, double ) )
+    //{
+    //    void text( T a )
+    //    {
+    //        import std.conv : to;
+    //        _textContent = a.to!string;
+    //    }
+    //}
+    
 
 /*
     void box_model()
@@ -324,10 +507,11 @@ struct Element
 */
 
     pragma( inline, true )
-    void vid_childs( IDrawer drawer )
+    void draw_childs( RenderContext* ctx )
     {
+        /*
         // set clipping
-        drawer.clipRect( computed.centerX, computed.centerY, computed.width, computed.height );
+        ctx.clip( computed.centerX, computed.centerY, computed.width, computed.height );
 
         // childs
         if ( firstChild !is null )
@@ -336,9 +520,10 @@ struct Element
             // in view
             if ( inView( e ) )
             {
-                e.vid( drawer );
+                e.draw( ctx );
             }
         }
+        */
     }
 
     bool inView( Element* child )
@@ -377,79 +562,6 @@ struct Element
     }
 
 
-    /** */
-    void vid_center( IDrawer drawer )
-    {
-        drawer.point( computed.centerX, computed.centerY, computed.color ); // point at: 0, 0 ( center )
-    }
-
-
-    /** */
-    void vid_margin( IDrawer drawer )
-    {
-        //auto marginArea = boxModel_marginArea;
-        // drawer.rectangleFilled( marginArea.left, marginArea.top, marginArea.right, marginArea.bottom, 0x333333.rgb );
-    }
-
-    /** */
-    void vid_border( IDrawer drawer )
-    {
-        auto w = computed.width / 2;
-        auto h = computed.height / 2;
-
-        if ( w > 0 && h > 0 ) 
-        {
-            if ( computed.borderTopWidth )
-            {
-                drawer.pen( computed.borderTopColor, computed.borderTopWidth );
-                drawer.moveTo( computed.centerX + -w, computed.centerY + h );  // left  top
-                drawer.lineTo( computed.centerX +  w, computed.centerY + h );  // right top
-            }
-
-            if ( computed.borderRightWidth )
-            {
-                drawer.pen( computed.borderRightColor, computed.borderRightWidth );
-                drawer.moveTo( computed.centerX + w, computed.centerY +  h );  // right top
-                drawer.lineTo( computed.centerX + w, computed.centerY + -h );  // right bottom
-            }
-
-            if ( computed.borderBottomWidth )
-            {
-                drawer.pen( computed.borderBottomColor, computed.borderBottomWidth );
-                drawer.moveTo( computed.centerX +  w, computed.centerY + -h );  // right bottom
-                drawer.lineTo( computed.centerX + -w, computed.centerY + -h );  // left  bottom
-            }
-            
-            if ( computed.borderLeftWidth )
-            {
-                drawer.pen( computed.borderLeftColor, computed.borderLeftWidth );
-                drawer.moveTo( computed.centerX + -w, computed.centerY + -h );  // left bottom
-                drawer.lineTo( computed.centerX + -w, computed.centerY +  h );  // left top
-            }
-        }
-    }
-
-    /** */
-    void vid_pading( IDrawer drawer )
-    {
-        //auto paddingArea = boxModel_paddingArea;
-        //drawer.rectangleFilled( paddingArea.left, paddingArea.top, paddingArea.right, paddingArea.bottom, 0x888888.rgb );
-    }
-
-    /** */
-    void vid_content( IDrawer drawer )
-    {
-        //auto contentArea = boxModel_contentArea;
-        //drawer.rectangleFilled( contentArea.left, contentArea.top, contentArea.right, contentArea.bottom, 0xCCCCCC.rgb );
-    }
-
-    /** */
-    void vid_symbol( IDrawer drawer )
-    {
-        drawer.pen( 0xCCCCCC.rgb, 3 );
-        drawer.moveTo( 0, 0 );  // center
-        //drawer.symbol( 'A', m, -( cast( int ) m )/2, m, m/2 );
-    }
 
     //Rect boxModel_marginArea()
     //{
@@ -552,10 +664,12 @@ struct Element
     pragma( inline, true )
     void applyElementMembers()
     {
+        /*
         if ( instanceClass.setter !is null )
         {
             instanceClass.setter( &this );  // call setClassMembers( T )( Element* this )
         }
+        */
     }
 
     pragma( inline, true )
@@ -927,6 +1041,73 @@ version ( ClassList2 )
         for ( auto e = firstChild; e !is null; e = e.nextSibling )
         {
             e.dump( level+2 );
+        }
+    }
+
+//private:
+    Element* selectByClass( string className )
+    {
+        // document 
+        //   body
+        //     e1
+        //     e2
+        //     e3
+        //       e4
+        //     e5
+        // [body, e1, e2, e3, e4, e5]
+        import std.container : DList;
+        import ui.walkindeep : walkInDeep;
+
+        auto lst = new NodeList();
+
+        walkInDeep( &this, ( element ) => {
+            lst ~= element;
+        } );
+
+        if ( lst.length > 0 )
+            return lst.item( 0 );
+        else
+            return null;
+    }
+
+    NodeList selectByClassAll( string className )
+    {
+        // document 
+        //   body
+        //     e1
+        //     e2
+        //     e3
+        //       e4
+        //     e5
+        // [body, e1, e2, e3, e4, e5]
+        import std.container : DList;
+        import ui.walkindeep : walkInDeep;
+
+        auto lst = new NodeList();
+
+        walkInDeep( &this, ( element ) => {
+            lst ~= element;
+        } );
+
+        return lst;
+    }
+}
+
+alias Node = Element;
+
+
+/** */
+struct EventHandler
+{
+    void delegate( Event* event ) handler;
+    alias handler this;
+
+    void opCall()
+    {
+        if ( handler !is null )
+        {
+            Event event;
+            handler( &event );
         }
     }
 }
