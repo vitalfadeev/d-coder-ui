@@ -336,12 +336,13 @@ size_t nextCodepoint( string s, size_t pos )
 
 
 /** */
+version ( windows )
 string[] systemDrives()
 {
     import core.sys.windows.windows;
     import core.stdc.wchar_ : wcslen;
     import std.string       : stripRight;
-    import ui.utf           : fromWStringz;
+    import ui.string        : fromWStringz;
     
     DWORD dwSize = MAX_PATH;
 

@@ -8,7 +8,7 @@ struct Screen
     static
     int width()
     {
-        GLFWmonitor* primary = glfwGetPrimaryMonitor();
+        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
         
         int _xpos;
         int _ypos;
@@ -30,7 +30,7 @@ struct Screen
     static
     int height()
     {
-        GLFWmonitor* primary = glfwGetPrimaryMonitor();
+        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
         
         int _xpos;
         int _ypos;

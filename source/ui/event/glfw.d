@@ -37,8 +37,10 @@ struct Event
     {
         switch ( type )
         {
-            case WM_KEYDOWN: return keyboard.code;
-            default: return 0;
+            case EventType.KeyboardKey: 
+                return keyboard.scancode;
+            default: 
+                return 0;
         }
     }
 }
@@ -153,3 +155,7 @@ struct KeyboardKeyEvent
 }
 
 
+alias WM_KEYDOWN = EventType.KeyboardKey;
+alias WM_LBUTTONDOWN = EventType.MouseKey;
+
+alias VK_SPACE = GLFW_KEY_SPACE;

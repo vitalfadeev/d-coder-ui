@@ -81,20 +81,20 @@ struct CanvasRenderingContext2D
         // - pre-wrap
         // - break-spaces
 
-        import ui.utf : toLPWSTR;
+        //import ui.string : toLPWSTR;
 
-        auto options = ETO_CLIPPED;
+        //auto options = ETO_CLIPPED;
 
-        ExtTextOutW(
-            _hdc,
-            x,
-            y,
-            options,
-            &clipRect.windowsRECT,
-            text.toLPWSTR,
-            text.length,
-            NULL
-        );
+        //ExtTextOutW(
+        //    _hdc,
+        //    x,
+        //    y,
+        //    options,
+        //    &clipRect.windowsRECT,
+        //    text.toLPWSTR,
+        //    text.length,
+        //    NULL
+        //);
     }
 
     void fillText( string text, POS x, POS y, int maxWidth )
@@ -135,7 +135,7 @@ private:
         POS maxx;
         POS maxy;
 
-        foreach ( p; _clipPath )
+        foreach ( p; _clipPath._path )
         {
             if ( minx > p.x )
                 minx = p.x;

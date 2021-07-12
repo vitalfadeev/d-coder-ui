@@ -36,3 +36,31 @@
 #
 - Search element: querySelector( "CSS selector" )
 - Search elements: querySelectorAll( "CSS selector" )
+
+# jQuery style
+1. S("selector") is function for search elements. Like a jQuery $().
+2. S!"selector" is template variant of the S("selector")
+3. S() result is Element collection
+```D
+    S(".box")
+        .each( (elem) => {
+            elem
+                .css(
+                    "color", "#CCC",
+                    "border", "1px solid #000"
+                )
+                .onclick( (el) => {
+                    console.log( el, " clicked" );
+                })
+        });
+```
+
+```T
+.box
+    color:  #CCC
+    border: 1px solid #000
+    on: clicked
+    {
+        console.log( el, " clicked" );
+    }
+```

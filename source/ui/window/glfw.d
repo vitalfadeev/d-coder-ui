@@ -16,7 +16,7 @@ struct Window
     nothrow @nogc
     int on( Event* event )
     {
-        //
+        return 0;
     }    
 }
 

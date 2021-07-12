@@ -17,7 +17,7 @@ class NodeList
     {
         import std.range : walkLength;
 
-        return walkLength( lst );
+        return lst[].walkLength;
     }
 
     /** Returns an item in the list by its index, or null if the index is out-of-bounds. */
@@ -51,14 +51,18 @@ class NodeList
 
     void forEach( NodeForEachCallback2 callback, void* This=null )
     {
-        foreach ( i, node; lst )
+        import std.range : enumerate;
+
+        foreach ( i, node; lst[].enumerate )
             callback( node, i );
     }
 
     void forEach( NodeForEachCallback3 callback, void* This=null )
     {
-        foreach ( i, node; lst )
-            callback( node, i, &this );
+        import std.range : enumerate;
+
+        foreach ( i, node; lst[].enumerate )
+            callback( node, i, cast( DList!( Node* )* ) cast( void* ) this );
     }
 
     /** Returns an iterator, allowing code to go through all the keys of the key/value pairs contained in the collection. (In this case, the keys are numbers starting from 0.) */
@@ -119,6 +123,7 @@ class NodeList
         if ( op == "~" && is(typeof(insertBack(rhs))) )
     {
         lst ~= rhs;
+        return this;
     }
 
 
@@ -130,5 +135,5 @@ protected:
 /** */
 alias NodeForEachCallback1 = void delegate( Node* node );
 alias NodeForEachCallback2 = void delegate( Node* node, size_t i );
-alias NodeForEachCallback3 = void delegate( Node* node, size_t i, DList!( Node* ) lst );
+alias NodeForEachCallback3 = void delegate( Node* node, size_t i, DList!( Node* )* lst );
 

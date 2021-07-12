@@ -1060,9 +1060,13 @@ version ( ClassList2 )
 
         auto lst = new NodeList();
 
-        walkInDeep( &this, ( element ) => {
+        //walkInDeep( &this, ( element ) => {
+        //    lst ~= element;
+        //} );
+
+        walkInDeep( &this, ( Element* element ) => {
             lst ~= element;
-        } );
+        });
 
         if ( lst.length > 0 )
             return lst.item( 0 );
@@ -1085,7 +1089,7 @@ version ( ClassList2 )
 
         auto lst = new NodeList();
 
-        walkInDeep( &this, ( element ) => {
+        walkInDeep( &this, ( Element* element ) {
             lst ~= element;
         } );
 

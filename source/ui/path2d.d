@@ -32,7 +32,7 @@ class Path2D
         _path ~= Point( x,         y );          // 1. close
     }
 
-private:
+//private:
     Point[] _path;
 }
 

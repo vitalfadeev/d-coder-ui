@@ -4,7 +4,7 @@ import ui.element : Node;
 import ui.element : Element;
 
 
-void walkInDeep( Element* root, void function( Element* ) callback )
+void walkInDeep( FUNC )( Element* root, FUNC callback )
 {
     // documnent
     //   body
