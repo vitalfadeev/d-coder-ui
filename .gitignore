@@ -14,3 +14,4 @@ d-coder-ui-sample-test-*
 *.lst
 mixins.d
 tools/mixins.d
+dub.selection.json
