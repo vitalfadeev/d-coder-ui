@@ -223,11 +223,11 @@ Element* createObject( string className )
 }
 
 
-int px( double a )
+POS px( double a )
 {
     import std.math : round;
     import std.conv : to;
-    return round( a ).to!int;
+    return round( a ).to!POS;
 }
 
 

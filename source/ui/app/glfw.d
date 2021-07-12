@@ -4,6 +4,7 @@ version( GLFW ):
 import glfw3.api;
 import bindbc.opengl;
 import core.stdc.stdio;
+import core.stdc.stdlib : exit;
 import std.conv    : to;
 import std.string  : toStringz;
 import ui.document : Document;
@@ -11,33 +12,38 @@ import ui.event    : EventType;
 import ui.window   : Window;
 import ui.base     : Display;
 import ui.event    : Event;
+import std.stdio   : writeln;
 
-
+/*
 void main_example()
 {
-    App app;
-    app.init_();
-    app.UI(); // document & window
-    app.eventLoop();
-    app.exit();
+    auto app = 
+        App!()()
+            .init_()
+            .UI()
+            .eventLoop()
+            .exit_();
 }
+*/
 
 
 /** */
-struct App
+struct App()
 {
     Document* document;
 
 
     /** */ 
-    void init_()
+    auto init_()
     {
         glfwSetErrorCallback( &errorCallback );
 
         if ( ! glfwInit() ) 
         {
-            return;
+            exit( 1 );
         }
+
+        return this;
     }
 
 
@@ -85,7 +91,7 @@ struct App
 
 
     /** */ 
-    void UI()
+    auto UI()
     {
         // create docuemtn
         //   create window if need
@@ -98,12 +104,12 @@ struct App
         this.document = createDocument( "app.t" );
         compute_width( &this.document.body );
         compute_height( &this.document.body );
-        compute_display( &this.document.body ); // creating window here, if 'display = window'. 'display = window' is default for body
+        compute_display( &this.document.body );
 
         with ( document.body )
         {        
             if ( computed.display == Display.window )
-            if ( window !is null )
+            if ( window is null )
             {
                 window = 
                     createWindow(
@@ -113,11 +119,13 @@ struct App
                     );
             }
         }
+
+        return this;
     }
 
 
     /** */
-    void eventLoop()
+    auto eventLoop()
     {
         Shaders shaders;
         const GLuint program     = shaders.getProgram();
@@ -144,17 +152,21 @@ struct App
             glfwSwapBuffers( window.glfwWindow );
             glfwPollEvents(); // calling mouseButtonCallback, cursorPositionCallback, keyCallback
         }
+
+        return this;
     }    
 
 
     /** */
-    void exit()
+    auto exit_()
     {
         if ( document )
         if ( document.body.window )
             glfwDestroyWindow( document.body.window.glfwWindow );
 
         glfwTerminate();
+
+        return this;
     }
 }
 
@@ -185,17 +197,18 @@ struct Shaders
         outColor = vec4(fragColor, 1.0);
     }";
 
-    GLuint getProgram() {
+    GLuint getProgram() 
+    {
         const GLint vertexShader = glCreateShader(GL_VERTEX_SHADER);
         {
-            const GLint[1]  lengths = [vertexShaderSource.length.to!int];
+            const GLint[1]  lengths = [vertexShaderSource.length.to!GLint];
             const(char)*[1] sources = [vertexShaderSource.ptr];
             glShaderSource(vertexShader, 1, sources.ptr, lengths.ptr);
             glCompileShader(vertexShader);
         }
         const GLint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
         {
-            const GLint[1] lengths = [fragmentShaderSource.length.to!int];
+            const GLint[1] lengths = [fragmentShaderSource.length.to!GLint];
             const(char)*[1] sources = [fragmentShaderSource.ptr];
             glShaderSource(fragmentShader, 1, sources.ptr, lengths.ptr);
             glCompileShader(fragmentShader);

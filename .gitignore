@@ -10,8 +10,11 @@ d-coder-ui-sample.lib
 d-coder-ui-sample-test-*
 *.exe
 *.o
+*.a
+*.so
 *.obj
 *.lst
 mixins.d
 tools/mixins.d
-dub.selection.json
+dub.selections.json
+deps/*

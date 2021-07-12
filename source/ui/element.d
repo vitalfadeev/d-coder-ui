@@ -43,18 +43,39 @@ struct Element
     void border( Color c )         { /* parse s, set borderWidth, borderStyle, borderColor */ }
     // border width
     //   <length> | thin | medium | thick | initial | revert | unset
+    void borderWidth( POS w ) {
+        borderTopWidth = 
+        borderRightWidth = 
+        borderBottomWidth = 
+        borderLeftWidth = 
+            w;
+    }
     CSSValue borderTopWidth;
     CSSValue borderRightWidth;
     CSSValue borderBottomWidth;
     CSSValue borderLeftWidth;
     // border Style
     //   <line-style> = none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset | initial | revert | unset
+    void borderStyle( LineStyle lineStyle ) {
+        borderTopStyle = 
+        borderRightStyle = 
+        borderBottomStyle = 
+        borderLeftStyle = 
+            lineStyle;
+    }
     CSSValue borderTopStyle;
     CSSValue borderRightStyle;
     CSSValue borderBottomStyle;
     CSSValue borderLeftStyle;
     // border color
     //   <color> = <rgb()> | <rgba()> | <hsl()> | <hsla()> | <hex-color> | <named-color> | currentcolor | <deprecated-system-color> | initial | revert | unset
+    void borderColor( Color c ) {
+        borderTopColor = 
+        borderRightColor = 
+        borderBottomColor = 
+        borderLeftColor = 
+            c;
+    }
     CSSValue borderTopColor;
     CSSValue borderRightColor;
     CSSValue borderBottomColor;
@@ -939,24 +960,6 @@ version ( ClassList2 )
     //{
     //    props.borderTopWidth = a;
     //}
-
-    @property
-    void borderWidth( int a )
-    {
-        // instanceClass.setter
-        //   ~= Setter( set_borderWidth, a );
-        //
-        // struct Setter
-        // {
-        //     int a;
-        //
-        //     void set() 
-        //     {
-        //         borderWidth = a;
-        //     }
-        // }
-        computed.borderWidth = a;
-    }
 
 
     // Node
