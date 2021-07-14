@@ -47,7 +47,7 @@ Support: [https://www.patreon.com/dgui](https://www.patreon.com/dgui)
 
 ![d-ui-element.png](docs/d-ui-element.png)
 
-### GUI markup example:
+### GUI markup example
 
 ![roof.png](docs/roof.png)
 
