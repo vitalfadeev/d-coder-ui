@@ -68,9 +68,15 @@ input
 
 roof
     disabled: true
+    left: 486px
+    top:  151px
+    position: absolute
 
 angle
-    text = 60
+    text: 60
+    left: 486px
+    top:  289px
+    position: absolute
 
     on: changed
     {
@@ -78,7 +84,10 @@ angle
     }
 
 wide
-    text = 2.50
+    text: 2.50
+    left: 198px
+    top:  459px
+    position: absolute
 
     on: changed
     {
@@ -95,7 +104,8 @@ wide
         auto wide  = S("wide" ).text.to!float;
         auto angle = S("angle").text.to!float;
 
-        S("root").text = wide / ( 2 * cos( angle / 180 * PI ) );
+        S("root").text = 
+            wide / ( 2 * cos( angle / 180 * PI ) );
     }
 }
 ```
