@@ -1,9 +1,7 @@
-module ui.rendercontext.glfw;
+module ui.rendercontext.imgui;
 
-version ( GLFW ):
-import glfw3.api;
-import bindbc.opengl;
-import bindbc.opengl : glColor3b;
+version ( IMGUI ):
+import imgui;
 import ui.color  : Color;
 import ui.base   : POS;
 import ui.path2d : Path2D;
@@ -27,7 +25,7 @@ struct CanvasRenderingContext2D
      */
     void strokeStyle( Color color )
     {
-        glColor3b( color.r, color.g, color.b );
+        _strokeStyleColor = color;
     }
 
     //void strokeStyle( string color )
@@ -137,8 +135,7 @@ struct CanvasRenderingContext2D
      */
     void lineWidth( float value )
     {
-        glPointSize( 10 );
-        glLineWidth( value );
+        _lineWidth = value;
     }
 
     /** 
@@ -257,12 +254,22 @@ struct CanvasRenderingContext2D
     void lineTo( int x, int y )
     {
         _strokePath.lineTo( x, y );
+        imguiDrawLine( 
+            graphicsXPos, 
+            windowHeight - 80, 
+            graphicsXPos + 100, 
+            windowHeight - 60, 
+            1.0f, 
+            RGBA(32, 192, 32, 192) 
+        );
     }
     
 
 private:
     Path2D _clipPath;
     Path2D _strokePath;
+    float  _lineWidth;
+    Color  _strokeStyleColor;
 
     Rect clipRect()
     {

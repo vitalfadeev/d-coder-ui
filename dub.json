@@ -15,7 +15,7 @@
             "targetPath"  : "lib",
             "targetName"  : "ui",
             "targetType"  : "library",
-            "versions"    : [ "DoubleBuffer", "LIB", "GLFW_33", "GL_33" ],
+            "versions"    : [ "DoubleBuffer", "LIB", "GLFW_33", "GL_32", "IMGUI" ],
             "libs"        : [ "user32", "gdi32" ],
             "dependencies":
             {
@@ -23,6 +23,7 @@
                 "bindbc-loader": { "path": "deps/bindbc-loader" },
                 "dlib"         : { "path": "deps/dlib" },
                 "glfw-d"       : { "path": "deps/glfw-d" },
+                "dimgui"       : { "path": "deps/dimgui" },
             }
         },
         {
@@ -32,7 +33,7 @@
             "targetPath"  : "lib",
             "targetName"  : "ui",
             "targetType"  : "library",
-            "versions"    : [ "LIB", "GLFW", "GLFW_33", "GL_33" ],
+            "versions"    : [ "LIB", "GLFW", "GLFW_33", "GL_32" ],
             "dependencies":
             {
                 "bindbc-glfw"   : { "path": "deps/bindbc-glfw" },

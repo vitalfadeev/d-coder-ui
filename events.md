@@ -137,3 +137,15 @@ map =
 ];
 
 ```
+
+Aliases:
+```
+version( windows ):
+alias GLFW_KEY_A     = VK_A; 
+alias SDL_SCANCODE_A = VK_A;
+...
+alias GLFW_MOUSE_KEY      = WM_LBUTTONDOWN;
+alias SDL_MOUSEBUTTONDOWN = WM_LBUTTONDOWN;
+alias clicked             = WM_LBUTTONDOWN;
+...
+```

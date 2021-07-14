@@ -1,6 +1,6 @@
 module ui.app.glfw;
 
-version( GLFW ):
+version ( GLFW ):
 import glfw3.api;
 import bindbc.opengl;
 import core.stdc.stdio;
@@ -36,6 +36,22 @@ struct App()
     /** */ 
     auto init_()
     {
+        version ( RENDER_BGFX )
+        {        
+            import bindbc.bgfx;
+
+            loadBgfx(); // required with dynamically linked bgfx
+
+            bgfx_init_t init;
+            bgfx_init_ctor(&init);
+
+            bgfx_init(&init);
+            bgfx_reset(1280, 720, BGFX_RESET_NONE, init.resolution.format);
+
+            bgfx_shutdown();
+            unloadBgfx(); // optional, only needed with dynamically linked bgfx
+        }
+
         glfwSetErrorCallback( &errorCallback );
 
         if ( ! glfwInit() ) 
@@ -144,6 +160,9 @@ struct App()
             int width, height;
             glfwGetFramebufferSize( window.glfwWindow, &width, &height );
             glViewport( 0, 0, width, height );
+
+            glClearColor ( 1.0f, 1.0f, 1.0f, 1.0f );
+            glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
             glUseProgram( program );
             glBindVertexArray( vaoTriangle );

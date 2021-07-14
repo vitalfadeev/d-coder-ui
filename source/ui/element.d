@@ -235,7 +235,59 @@ struct Element
     //private
     void draw_border( RenderContext* ctx )
     {
-        //
+        if ( computed.borderTopWidth    != 0 && computed.borderTopStyle    != LineStyle.none )
+        if ( computed.borderRightWidth  != 0 && computed.borderRightStyle  != LineStyle.none )
+        if ( computed.borderBottomWidth != 0 && computed.borderBottomStyle != LineStyle.none )
+        if ( computed.borderLeftWidth   != 0 && computed.borderLeftStyle   != LineStyle.none )
+        {
+            //ctx.lineCap( LineCap.square ); // butt | round | square
+            //ctx.setLineDash( [ 5, 15 ] );
+            //ctx.lineDashOffset( 0.0 );
+
+            // top
+            if ( computed.borderTopWidth != 0 && computed.borderTopStyle != LineStyle.none )
+            {
+                ctx.beginPath();
+                ctx.lineWidth( computed.borderTopWidth );
+                ctx.strokeStyle( computed.borderTopColor );
+                ctx.moveTo( computed.absolute.left, computed.absolute.top );
+                ctx.lineTo( computed.absolute.right, computed.absolute.top );
+                ctx.stroke();
+            }
+
+            // right
+            if ( computed.borderRightWidth != 0 && computed.borderRightStyle != LineStyle.none )
+            {
+                ctx.beginPath();
+                ctx.lineWidth( computed.borderRightWidth );
+                ctx.strokeStyle( computed.borderRightColor );
+                ctx.moveTo( computed.absolute.right, computed.absolute.top );
+                ctx.lineTo( computed.absolute.right, computed.absolute.bottom );
+                ctx.stroke();
+            }
+
+            // bottom
+            if ( computed.borderBottomWidth != 0 && computed.borderBottomStyle != LineStyle.none )
+            {
+                ctx.beginPath();
+                ctx.lineWidth( computed.borderBottomWidth );
+                ctx.strokeStyle( computed.borderBottomColor );
+                ctx.moveTo( computed.absolute.right, computed.absolute.bottom );
+                ctx.lineTo( computed.absolute.left, computed.absolute.bottom );
+                ctx.stroke();
+            }
+
+            // left
+            if ( computed.borderLeftWidth != 0 && computed.borderLeftStyle != LineStyle.none )
+            {
+                ctx.beginPath();
+                ctx.lineWidth( computed.borderLeftWidth );
+                ctx.strokeStyle( computed.borderLeftColor );
+                ctx.moveTo( computed.absolute.left, computed.absolute.bottom );
+                ctx.lineTo( computed.absolute.left, computed.absolute.top );
+                ctx.stroke();
+            }
+        }
     }
 
     /** 
@@ -557,28 +609,8 @@ struct Element
         return false;
     }
 
-    bool isIntersected( Element* child )
+    bool isIntersected( Element* b )
     {
-        POS x1 = computed.centerX - computed.width / 2  + scrollLeft;
-        POS y1 = computed.centerY - computed.height / 2 + scrollTop;
-        POS x2 = x1 + computed.width;
-        POS y2 = y1 + computed.height;
-
-        POS cx1 = child.computed.centerX - child.computed.width / 2;
-        POS cy1 = child.computed.centerY - child.computed.height / 2;
-        POS cx2 = cx1 + child.computed.width;
-        POS cy2 = cy1 + child.computed.height;
-
-        if ( 
-             cx1.between( x1, x2 ) && cy1.between( y1, y2 ) ||
-             cx2.between( x1, x2 ) && cy1.between( y1, y2 ) ||
-             cx2.between( x1, x2 ) && cy2.between( y1, y2 ) ||
-             cx1.between( x1, x2 ) && cy2.between( y1, y2 )
-           )
-        {
-            return true;
-        }
-
         return false;
     }
 
@@ -642,9 +674,7 @@ struct Element
     /** */
     bool hitTest( Point p )
     {
-        return 
-            ( abs( p.x - computed.centerX ) <= abs( computed.width / 2 ) ) &&
-            ( abs( p.y - computed.centerY ) <= abs( computed.height / 2 ) );
+        return false;
     }
 
 
@@ -700,8 +730,7 @@ struct Element
         {
             with ( computed )
             {
-                computed.centerX -= parentNode.scrollLeft;
-                computed.centerY += parentNode.scrollTop;
+                //
             }
         }        
     }

@@ -363,3 +363,55 @@ struct RenderContext
 +-----------------------------+
 ```
 
+
+### Document, Viewport
+```
++-----------------------------+
+| Document                    |
+|                             |
+| +-------------------------+ |  -->  +-------------------------+   Translate Element Document coordinates
+| | Viewport                | |       | Window                  |   to Viewport coordinates
+| |                         | |       |                         |   ( x, y ) -->  ( x, y )
+| |                         | |       |                         |
+| |                         | |       |                         |   element_in_viewport__left = element.absolute.left - viewport.left
+| |                         | |       |                         |   element_in_viewport__top  = element.absolute.top  - viewport.top
+| |                         | |       |                         |
+| |                         | |       |                         |   element_in_viewport__rect = element.absolute.rect - viewport.rect
+| +-------------------------+ |       +-------------------------+
+|                             |
+|                             |
+|                             |
+|                             |
+|                             |
++-----------------------------+
+
+
+Viewport
+  left        // left position relative at Document
+  top
+  right
+  bottom
+
+Element
+  computed
+    absolute
+      left    // left position relative at Document
+      top
+      right
+      bottom
+```
+
+### Element Shape
+1. Element can be any shape. 
+2. Shape is 2D path. Shape is closed 2D path.
+3. shape() is function for define Element Shape.
+```D
+.shape( Path2D( [ 1, 1,  2, 2,  3, 3,  4, 4 ] ) )
+
+```
+4. background affected to the Shape
+```D
+background: #CCC; // is fill Shape with color #CCC.
+```
+5. Mouse 'onclick' function checks for cursor is in Shape
+

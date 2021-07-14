@@ -14,11 +14,8 @@ alias int POS;
 
 struct Computed
 {
-    // center, with scroll, relative from parent
-    POS        centerX;  // px, center: relative from the parent center
-    POS        centerY;  // px, center: relative from the parent center
-
-    Rect       absoluteRect;
+    // absolute coord, relative from document root
+    Rect       absolute;
 
     // position
     Position   position;
@@ -67,19 +64,6 @@ struct Computed
     POS        paddingTop;
     POS        paddingRight;
     POS        paddingBottom;
-
-    // Magnetic helpers
-    // to childs
-    POWER      magnetInLeft   = 100;
-    POWER      magnetInRight  = 100;
-    POWER      magnetInTop    = 100;
-    POWER      magnetInBottom = 100;
-
-    // to sibling
-    POWER      magnetLeft     = 100;
-    POWER      magnetRight    = 100;
-    POWER      magnetTop      = 100;
-    POWER      magnetBottom   = 100;
 
     // display
     Display    innerDisplay;
@@ -381,4 +365,13 @@ struct Percentage
 {
     float number;
     alias number this;
+}
+
+
+//
+enum LineCap
+{
+    butt,
+    round,
+    square
 }
