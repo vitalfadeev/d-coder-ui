@@ -1,9 +1,27 @@
 # d-coder-ui
-Native D language UI. Windows / Linux / Android( planned )
+
+![dguilogo.png](docs/dguilogo.png)
+
+D language GUI. 
+
+Goals:
+- native
+- fast
+- low RAM usage
+- Windows / Linux / Android ( planned )
+- CSS
+- human-readable markup
+- GDI / OpenGL / GLES
+- API like Chrome / Firefox
+- JS / jQuery selectors
+- event handlers on D language
+
 
 Example: [https://github.com/vitalfadeev/d-coder-ui-sample](https://github.com/vitalfadeev/d-coder-ui-sample)
 
 Radmap: [roadmap.md](roadmap.md)
+
+Support: [https://www.patreon.com/dgui](https://www.patreon.com/dgui)
 
 
 ## Details

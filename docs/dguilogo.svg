@@ -8,14 +8,14 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.0"
-   height="38"
-   viewBox="0 0 267.03079 89"
+   height="39.104851"
+   viewBox="0 0 288.03476 91.587676"
    id="svg21"
    sodipodi:docname="dguilogo.svg"
-   inkscape:export-filename="/home/vital/Downloads/dlogo.png"
-   inkscape:export-xdpi="96"
-   inkscape:export-ydpi="96"
-   width="267.03079"
+   inkscape:export-filename="/home/vital/src/d-coder-ui/docs/dlguiogo.png"
+   inkscape:export-xdpi="996.35858"
+   inkscape:export-ydpi="996.35858"
+   width="288.03476"
    inkscape:version="1.0.2 (e86c870879, 2021-01-15)">
   <metadata
      id="metadata25">
@@ -42,9 +42,9 @@
      inkscape:window-height="726"
      id="namedview23"
      showgrid="false"
-     inkscape:zoom="2.3284823"
-     inkscape:cx="146.32873"
-     inkscape:cy="-9.1646928"
+     inkscape:zoom="1.6464856"
+     inkscape:cx="132.00423"
+     inkscape:cy="5.4167624"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -70,14 +70,14 @@
   </defs>
   <!-- background -->
   <rect
-     width="234.4257%"
+     width="674.60773"
      height="100.95992%"
-     style="fill:#b03931;stroke-width:1.53842"
+     style="fill:#b03931;stroke-width:1.54136"
      id="rect9"
-     x="-179.23126"
-     y="0.014005973" />
+     x="-192.37462"
+     y="1.3877788e-17" />
   <g
-     transform="translate(3.6398104,0.56579094)"
+     transform="translate(-17.861603,0.62402068)"
      id="g19"
      style="fill:#ffffff">
     <!-- planet (originally a shiny effect, I guess) -->
@@ -115,14 +115,14 @@
   </g>
   <text
      xml:space="preserve"
-     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:95.2011px;line-height:1.25;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#de8787;fill-opacity:1;stroke:none;stroke-width:2.55005"
-     x="109.10592"
-     y="83.852142"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:95.2011px;line-height:1.25;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#dba29c;fill-opacity:1;stroke:none;stroke-width:2.55005"
+     x="85.724174"
+     y="83.836891"
      id="text29"
-     transform="scale(1.0887858,0.91845429)"><tspan
+     transform="scale(1.0887858,0.9184543)"><tspan
        sodipodi:role="line"
        id="tspan27"
-       x="109.10592"
-       y="83.852142"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:95.2011px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#de8787;stroke-width:2.55005">GUI</tspan></text>
+       x="85.724174"
+       y="83.836891"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:95.2011px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#dba29c;fill-opacity:1;stroke-width:2.55005">GUI</tspan></text>
 </svg>
