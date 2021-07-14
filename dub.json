@@ -15,7 +15,7 @@
             "targetPath"  : "lib",
             "targetName"  : "ui",
             "targetType"  : "library",
-            "versions"    : [ "DoubleBuffer", "LIB", "GLFW_33", "GL_32", "IMGUI" ],
+            "versions"    : [ "DoubleBuffer", "LIB", "GLFW", "GLFW_33", "GL_32" ],
             "libs"        : [ "user32", "gdi32" ],
             "dependencies":
             {

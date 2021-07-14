@@ -49,6 +49,10 @@ Support: [https://www.patreon.com/dgui](https://www.patreon.com/dgui)
 
 ### Tree
 
+GUI markup example:
+
+![roof.png](docs/roof.png)
+
 ```T
 body
     e image
@@ -99,7 +103,7 @@ wide
     {
         // roof = wide / ( 2 * cos angle )
 
-        import std.math : cos;
+        import std.math;
 
         auto wide  = S("wide" ).text.to!float;
         auto angle = S("angle").text.to!float;
