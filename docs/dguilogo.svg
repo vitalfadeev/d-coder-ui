@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.0"
+   height="38"
+   viewBox="0 0 267.03079 89"
+   id="svg21"
+   sodipodi:docname="dguilogo.svg"
+   inkscape:export-filename="/home/vital/Downloads/dlogo.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   width="267.03079"
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15)">
+  <metadata
+     id="metadata25">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1294"
+     inkscape:window-height="726"
+     id="namedview23"
+     showgrid="false"
+     inkscape:zoom="2.3284823"
+     inkscape:cx="146.32873"
+     inkscape:cy="-9.1646928"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg21" />
+  <defs
+     id="defs7">
+    <linearGradient
+       x1="66"
+       y1="50"
+       x2="60"
+       y2="99"
+       id="gradient"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         style="stop-color: white; stop-opacity: 1"
+         offset="0"
+         id="stop2" />
+      <stop
+         style="stop-color: white; stop-opacity: 0"
+         offset="1"
+         id="stop4" />
+    </linearGradient>
+  </defs>
+  <!-- background -->
+  <rect
+     width="234.4257%"
+     height="100.95992%"
+     style="fill:#b03931;stroke-width:1.53842"
+     id="rect9"
+     x="-179.23126"
+     y="0.014005973" />
+  <g
+     transform="translate(3.6398104,0.56579094)"
+     id="g19"
+     style="fill:#ffffff">
+    <!-- planet (originally a shiny effect, I guess) -->
+    <ellipse
+       cx="-4.5"
+       cy="308"
+       rx="310"
+       ry="266"
+       style="opacity:0.3;fill:#ffffff"
+       id="ellipse11" />
+    <!-- bigger moon -->
+    <ellipse
+       style="fill:#ffffff"
+       rx="12"
+       ry="11"
+       transform="matrix(1.4307812,0,0,1.4307812,83.217726,32.792769)"
+       id="ellipse13"
+       cx="0"
+       cy="0" />
+    <!-- smaller moon -->
+    <ellipse
+       style="fill:#ffffff"
+       rx="12"
+       ry="11"
+       transform="matrix(0.45972758,0,0,0.45972758,102.78233,15.497389)"
+       id="ellipse15"
+       cx="0"
+       cy="0" />
+    <!-- D -->
+    <path
+       style="fill:#ffffff"
+       transform="matrix(1.475092,0,0,1.475092,-34.36508,-45.63879)"
+       d="m 32.333318,39.18804 c -0.810423,0.100191 -1.445546,0.747081 -1.448237,1.530008 l 0.05115,39.976517 c 0,0.605435 0.16377,1.853949 1.86691,1.853949 l 15.309845,-0.06107 c 4.376235,-0.0078 7.307373,-0.08265 9.052976,-0.303342 0.01019,7.1e-5 0.03125,4.2e-5 0.04143,-6.2e-5 1.670518,-0.232037 3.440036,-0.65958 5.36408,-1.284309 3.344758,-1.045783 6.310742,-2.590914 8.860956,-4.65465 2.496912,-1.999262 4.431819,-4.366287 5.791789,-7.029031 1.359852,-2.662676 2.045357,-5.47805 2.040248,-8.396714 -0.0072,-4.062678 -1.236199,-7.866897 -3.702086,-11.289377 -2.466138,-3.422627 -5.83233,-6.043726 -9.974869,-7.779593 -4.211418,-1.785447 -9.702531,-2.598978 -16.514823,-2.586807 l -16.532201,0.02417 c -0.07107,3.95e-4 -0.138489,-0.0082 -0.207171,3.03e-4 z m 8.898154,8.225996 7.126664,-0.01042 c 3.330616,-0.0059 5.700107,0.09523 7.044164,0.279807 1.362489,0.187177 2.854705,0.582181 4.434981,1.192619 1.56625,0.596782 2.931614,1.327683 4.104845,2.237482 3.227723,2.509501 4.74927,5.479515 4.756254,9.411818 0.0071,4.02642 -1.463298,7.162711 -4.607379,9.792976 -0.967178,0.798314 -2.042682,1.475215 -3.22926,2.035463 -1.121501,0.522301 -2.58442,0.97246 -4.431715,1.360307 -1.742195,0.348503 -4.387131,0.54682 -7.83035,0.552979 l -7.333833,0.01072 z"
+       id="path17" />
+  </g>
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:95.2011px;line-height:1.25;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#de8787;fill-opacity:1;stroke:none;stroke-width:2.55005"
+     x="109.10592"
+     y="83.852142"
+     id="text29"
+     transform="scale(1.0887858,0.91845429)"><tspan
+       sodipodi:role="line"
+       id="tspan27"
+       x="109.10592"
+       y="83.852142"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:95.2011px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#de8787;stroke-width:2.55005">GUI</tspan></text>
+</svg>
