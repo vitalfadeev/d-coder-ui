@@ -5,6 +5,7 @@ import glfw3.api;
 import bindbc.opengl;
 import core.stdc.stdio;
 import core.stdc.stdlib : exit;
+import core.stdc.stdio  : printf;
 import std.conv    : to;
 import std.string  : toStringz;
 import ui.document : Document;
@@ -12,17 +13,15 @@ import ui.event    : EventType;
 import ui.window   : Window;
 import ui.base     : Display;
 import ui.event    : Event;
+import ui.loadui   : loadUI;
 import std.stdio   : writeln;
+import ui.window   : createMainWindow;
+import ui.window   : MainWindow;
 
 /*
-void main_example()
+int main_example()
 {
-    auto app = 
-        App!()()
-            .init_()
-            .UI()
-            .eventLoop()
-            .exit_();
+    return App( "app.t" ).result;
 }
 */
 
@@ -30,84 +29,61 @@ void main_example()
 /** */
 struct App()
 {
-    Document* document;
+    Document   document;
+    MainWindow window;
+    int        result;
+
+
+    /** */
+    nothrow @nogc
+    this( string docName )
+    {
+        load();
+        UI( docName );
+        mainLoop();
+    }
 
 
     /** */ 
-    auto init_()
+    nothrow @nogc
+    void load()
     {
-        version ( RENDER_BGFX )
-        {        
-            import bindbc.bgfx;
-
-            loadBgfx(); // required with dynamically linked bgfx
-
-            bgfx_init_t init;
-            bgfx_init_ctor(&init);
-
-            bgfx_init(&init);
-            bgfx_reset(1280, 720, BGFX_RESET_NONE, init.resolution.format);
-
-            bgfx_shutdown();
-            unloadBgfx(); // optional, only needed with dynamically linked bgfx
-        }
-
-        glfwSetErrorCallback( &errorCallback );
-
-        if ( ! glfwInit() ) 
+        if ( loadUI() ) 
         {
+            result = 1;
+            printf( "error: loadUI()\n" );
             exit( 1 );
         }
-
-        return this;
     }
 
 
     /** */
-    static
-    Window* createWindow( int w, int h, string name )
+    static nothrow @nogc
+    auto createMainWindow( int w, int h, string name )
     {
-        GLFWwindow* glfwWindow;
-
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-
-        glfwWindow = glfwCreateWindow( w, h, name.toStringz, null, null );
-        if ( ! glfwWindow ) 
-        {
-            return null;
-        }
-
-        glfwMakeContextCurrent( glfwWindow );
-        glfwSwapInterval( 1 ); // Set vsync on so glfwSwapBuffers will wait for monitor updates.
-                               // note: 1 is not a boolean! Set e.g. to 2 to run at half the monitor refresh rate.
-
-        GLSupport retVal = loadOpenGL();
-        if ( retVal == GLSupport.badLibrary || retVal == GLSupport.noLibrary ) 
-        {
-            glfwDestroyWindow( glfwWindow );
-            return null;
-        }
-
-        return new Window( glfwWindow );
+        return .createMainWindow( w, h, name );
     }
 
 
     /** */
-    Document* createDocument( string name )
+    static nothrow @nogc
+    auto createWindow( int w, int h, string name )
     {
-        import generated;
+        return .createWindow( w, h, name );
+    }
 
-        auto doc = new Document();
 
-        generated.initUI( doc );
-
-        return doc;
+    /** */
+    static nothrow @nogc
+    auto createDocument( string name )
+    {
+        return .createDocument( name );
     }
 
 
     /** */ 
-    auto UI()
+    nothrow @nogc
+    void UI( string docName )
     {
         // create docuemtn
         //   create window if need
@@ -117,10 +93,10 @@ struct App()
         import ui.compute.height  : compute_height;
         import ui.compute.display : compute_display;
 
-        this.document = createDocument( "app.t" );
-        compute_width( &this.document.body );
-        compute_height( &this.document.body );
-        compute_display( &this.document.body );
+        document = createDocument( docName );
+        compute_width( &document.body );
+        compute_height( &document.body );
+        compute_display( &document.body );
 
         with ( document.body )
         {        
@@ -135,57 +111,48 @@ struct App()
                     );
             }
         }
+    }
 
-        return this;
+
+    nothrow @nogc
+    void draw()
+    {
+        //
     }
 
 
     /** */
-    auto eventLoop()
+    nothrow @nogc
+    void eventLoop()
     {
-        Shaders shaders;
-        const GLuint program     = shaders.getProgram();
-        const GLuint vaoTriangle = shaders.getTriangleVao();
-        auto window = document.body.window;
-
         // Mouse buttons callback
-        glfwSetMouseButtonCallback(window.glfwWindow, &mouseButtonCallback);
+        glfwSetMouseButtonCallback( window.glfwWindow, &mouseButtonCallback );
         // Mouse cursor move
-        glfwSetCursorPosCallback(window.glfwWindow, &cursorPositionCallback);
+        glfwSetCursorPosCallback( window.glfwWindow, &cursorPositionCallback );
         // Key callback
-        glfwSetKeyCallback(window.glfwWindow, &keyCallback);
+        glfwSetKeyCallback( window.glfwWindow, &keyCallback );
 
-        while ( ! glfwWindowShouldClose( window.glfwWindow ) )
+        //
+        while ( ! glfwWindowShouldClose( window.glfwWindow ) ) 
         {
-            int width, height;
-            glfwGetFramebufferSize( window.glfwWindow, &width, &height );
-            glViewport( 0, 0, width, height );
-
-            glClearColor ( 1.0f, 1.0f, 1.0f, 1.0f );
-            glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-            glUseProgram( program );
-            glBindVertexArray( vaoTriangle );
-            glDrawArrays( GL_TRIANGLES, /*first*/ 0, /*count*/ 3 );
-
-            glfwSwapBuffers( window.glfwWindow );
-            glfwPollEvents(); // calling mouseButtonCallback, cursorPositionCallback, keyCallback
+            draw();
+            glfwSwapBuffers( window );
+            glfwPollEvents();
         }
 
-        return this;
+        result = 0;
     }    
 
 
     /** */
-    auto exit_()
+    nothrow @nogc
+    ~this()
     {
         if ( document )
         if ( document.body.window )
             glfwDestroyWindow( document.body.window.glfwWindow );
 
-        glfwTerminate();
-
-        return this;
+        //glfwTerminate();
     }
 }
 
@@ -197,93 +164,8 @@ void errorCallback( int error, const(char)* description )
 }
 
 
-// SHADER PROGRAM /////////////////////////
-struct Shaders
-{
-    immutable string vertexShaderSource = "#version 330
-    layout(location = 0) in vec2 position;
-    layout(location = 1) in vec3 color;
-    out vec3 fragColor;
-    void main() {
-        gl_Position = vec4(position, 0.0, 1.0);
-        fragColor = color;
-    }";
-
-    immutable string fragmentShaderSource = "#version 330
-    in vec3 fragColor;
-    out vec4 outColor;
-    void main() {
-        outColor = vec4(fragColor, 1.0);
-    }";
-
-    GLuint getProgram() 
-    {
-        const GLint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        {
-            const GLint[1]  lengths = [vertexShaderSource.length.to!GLint];
-            const(char)*[1] sources = [vertexShaderSource.ptr];
-            glShaderSource(vertexShader, 1, sources.ptr, lengths.ptr);
-            glCompileShader(vertexShader);
-        }
-        const GLint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        {
-            const GLint[1] lengths = [fragmentShaderSource.length.to!GLint];
-            const(char)*[1] sources = [fragmentShaderSource.ptr];
-            glShaderSource(fragmentShader, 1, sources.ptr, lengths.ptr);
-            glCompileShader(fragmentShader);
-        }
-
-        const GLuint program = glCreateProgram();
-        glAttachShader(program, vertexShader);
-        glAttachShader(program, fragmentShader);
-        glLinkProgram(program);
-
-        return program;
-    }
-
-    // MODEL /////////////////////////
-
-    struct Vertex {
-        float[2] position;
-        float[3] color;
-    }
-
-    immutable Vertex[3] vertices = [
-        Vertex([-0.6f, -0.4f], [1.0f, 0.0f, 0.0f]),
-        Vertex([ 0.6f, -0.4f], [0.0f, 1.0f, 0.0f]),
-        Vertex([ 0.0f,  0.6f], [0.0f, 0.0f, 1.0f]),
-    ];
-
-    GLuint getTriangleVao() {
-        // Upload data to GPU
-        GLuint vbo;
-        glGenBuffers(1, &vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, vertices.sizeof, vertices.ptr, /*usage hint*/ GL_STATIC_DRAW);
-
-        // Describe layout of data for the shader program
-        GLuint vao;
-        glGenVertexArrays(1, &vao);
-        glBindVertexArray(vao);
-
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(
-            /*location*/ 0, /*num elements*/ 2, /*base type*/ GL_FLOAT, /*normalized*/ GL_FALSE,
-            Vertex.sizeof, cast(void*) Vertex.position.offsetof
-        );
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(
-            /*location*/ 1, /*num elements*/ 3, /*base type*/ GL_FLOAT, /*normalized*/ GL_FALSE,
-            Vertex.sizeof, cast(void*) Vertex.color.offsetof
-        );
-
-        return vao;
-    }    
-}
-
-
 extern (C) nothrow @nogc
-void mouseButtonCallback(GLFWwindow* glfwWindow, int button, int action, int mods)
+void mouseButtonCallback( GLFWwindow* glfwWindow, int button, int action, int mods )
 {
     Window window = { glfwWindow: glfwWindow };
 
@@ -303,7 +185,7 @@ void mouseButtonCallback(GLFWwindow* glfwWindow, int button, int action, int mod
 }
 
 extern (C) static nothrow @nogc
-void cursorPositionCallback(GLFWwindow* glfwWindow, double xpos, double ypos)
+void cursorPositionCallback( GLFWwindow* glfwWindow, double xpos, double ypos )
 {
     Window window = { glfwWindow: glfwWindow };
 
@@ -323,7 +205,7 @@ void cursorPositionCallback(GLFWwindow* glfwWindow, double xpos, double ypos)
 
 
 extern (C) nothrow @nogc
-void keyCallback(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods)
+void keyCallback( GLFWwindow* glfwWindow, int key, int scancode, int action, int mods )
 {
     Window window = { glfwWindow: glfwWindow };
 
@@ -343,3 +225,14 @@ void keyCallback(GLFWwindow* glfwWindow, int key, int scancode, int action, int 
     window.on( &event );
 }
 
+
+static nothrow @nogc
+auto createDocument( string name )
+{
+    Document document;
+
+    import generated;
+    generated.initUI( &document );
+
+    return document;
+}

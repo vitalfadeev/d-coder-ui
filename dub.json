@@ -33,7 +33,7 @@
             "targetPath"  : "lib",
             "targetName"  : "ui",
             "targetType"  : "library",
-            "versions"    : [ "LIB", "GLFW", "GLFW_33", "GL_32" ],
+            "versions"    : [ "LIB", "GLFW", "GLFW_33", "GL_32", "GL3" ],
             "dependencies":
             {
                 "bindbc-glfw"   : { "path": "deps/bindbc-glfw" },

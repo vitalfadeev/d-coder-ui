@@ -1,6 +1,7 @@
 module ui.base;
 
 import ui;
+import ui.linestyle;
 import std.json;
 
 enum MAX_CLASSES = size_t.sizeof * 8; // for x86_64 = 64
@@ -214,20 +215,6 @@ POS px( double a )
     return round( a ).to!POS;
 }
 
-
-enum LineStyle
-{
-    none, 
-    hidden, 
-    dotted, 
-    dashed, 
-    solid, 
-    double_,
-    groove, 
-    ridge, 
-    inset, 
-    outset
-};
 
 enum Display
 {

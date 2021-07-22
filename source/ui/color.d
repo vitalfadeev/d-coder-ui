@@ -55,6 +55,21 @@ version (windows)
     }    
 
 
+version ( GL3 )
+    import bindbc.opengl.bind.types : GLfloat;
+version ( GL3 )
+    nothrow @nogc
+    GLfloat[3] glColor()
+    {
+        return
+        [ 
+            ( cast( GLfloat ) r ) / ubyte.max, 
+            ( cast( GLfloat ) g ) / ubyte.max, 
+            ( cast( GLfloat ) b ) / ubyte.max, 
+        ];
+    }
+
+
     string toString()
     {
         return format!"Color( 0x%x%x%x )"( r, g, b );
@@ -69,6 +84,7 @@ version (windows)
 
 
 
+nothrow @nogc
 uint _rgb( uint x )
 {
     return 
@@ -81,6 +97,7 @@ uint _rgb( uint x )
 
 
 /** */
+nothrow @nogc
 Color rgb( uint x )
 {
     return 
@@ -92,6 +109,7 @@ Color rgb( uint x )
 }
 
 
+nothrow @nogc
 Color rgb( ubyte r, ubyte g, ubyte b )
 {
     return 
@@ -104,6 +122,7 @@ Color rgb( ubyte r, ubyte g, ubyte b )
 
 
 /** */
+nothrow @nogc
 Color argb( uint x )
 {
     return 

@@ -46,3 +46,5 @@ public import ui.event; //  Event, EventType, WM_*, VK_*, GLFW_KEY_*
 
 // Thread locals
 
+// Loader
+public import ui.loadui : loadUI;
