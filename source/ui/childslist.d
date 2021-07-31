@@ -11,9 +11,9 @@ struct ChildsList
     Element* firstChild;
     Element* lastChild;
 
-    void opAssign( Element*[] b )
+    ref ChildsList opAssign( Element*[] b ) return
     {
-        //
+        return this;
     }
 
     int opApply( int delegate( Element* ) dg )
@@ -58,8 +58,8 @@ struct Child
     Element* firstChild;
     Element* lastChild;
 
-    void opAssign( Element* b )
+    ref Child opAssign( Element* b ) return
     {
-        //
+        return this;
     }
 }

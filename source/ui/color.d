@@ -42,9 +42,10 @@ version (windows)
 
     version ( window )
     pragma( inline )
-    void opAssign( uint a )
+    ref Color opAssign( uint a ) return
     {
         windowsCOLORREF = _rgb( a );
+        return this;
     }
 
 

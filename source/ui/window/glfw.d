@@ -1,8 +1,8 @@
 module ui.window.glfw;
 
 version( GLFW ):
-import glfw3.api;
-import bindbc.opengl;
+import deps.glfw;
+import deps.gl3;
 import core.stdc.stdio;
 import ui.event : Event;
 

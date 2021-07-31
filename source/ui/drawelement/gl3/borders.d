@@ -238,6 +238,7 @@ void drawTopBorder(
     glBindVertexArray( vao );
     glDrawArrays( GL_TRIANGLE_FAN , /*first*/ 0, /*count*/ cast( int ) vertices.length );
     glBindVertexArray( 0 ); // unbind
+    glUseProgram( 0 );
 }
 
 

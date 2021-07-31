@@ -3,7 +3,9 @@ module ui.drawelement.gl3.element;
 version ( GL3 ):
 import ui.drawelement.gl3.borders;
 import ui.drawelement.gl3.background;
+import ui.drawelement.gl3.content;
 import ui.drawelement.gl3.text;
+import ui.drawelement.gl3.image : drawImage;
 import ui.linestyle;
 import ui.color;
 
@@ -44,7 +46,13 @@ void drawElement(
     Color     borderRightColor,
     Color     borderBottomColor,
 
-    Color     backgroundColor
+    Color     backgroundColor,
+
+    int       paddingLeft,
+    int       paddingTop,
+    int       paddingRight,
+    int       paddingBottom,
+    string    text
 )
 {
     // Get Element pos & size (x,y) (w,h)
@@ -61,6 +69,7 @@ void drawElement(
     // Draw image
     // Draw text
 
+/*
     //
     drawBorders(
         windowLeft,
@@ -113,13 +122,18 @@ void drawElement(
 
         backgroundColor
     );
+*/
+
+    //drawImage();
+
 
     //
-    //drawContent(
-    //    paddingLeft,
-    //    paddingTop,
-    //    paddingRight,
-    //    paddingBottom,
-    //    text,
-    //);
+    drawContent(
+        paddingLeft,
+        paddingTop,
+        paddingRight,
+        paddingBottom,
+        text,
+    );
+
 }

@@ -1,7 +1,7 @@
 module ui.event.keycodes.glfw;
 
 version( GLFW ):
-import glfw3.api;
+import bindbc.glfw;
 import bindbc.glfw.types;
 import std.string : startsWith;
 import std.format : format;

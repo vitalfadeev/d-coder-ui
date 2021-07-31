@@ -17,27 +17,27 @@ struct VAO
     nothrow @nogc
     this( T )( T vertices )
     {
-	// Upload data to GPU
-	//GLuint vbo;
-	glGenBuffers( 1, &vbo );
-	glBindBuffer( GL_ARRAY_BUFFER, vbo );
-	glBufferData( GL_ARRAY_BUFFER, vertices.sizeof, vertices.ptr, /*usage hint*/ GL_STATIC_DRAW );
+		// Upload data to GPU
+		//GLuint vbo;
+		glGenBuffers( 1, &vbo );
+		glBindBuffer( GL_ARRAY_BUFFER, vbo );
+		glBufferData( GL_ARRAY_BUFFER, vertices.sizeof, vertices.ptr, /*usage hint*/ GL_STATIC_DRAW );
 
-	// Describe layout of data for the shader program
-	//GLuint vao;
-	glGenVertexArrays( 1, &vao );
-	glBindVertexArray( vao );
+		// Describe layout of data for the shader program
+		//GLuint vao;
+		glGenVertexArrays( 1, &vao );
+		glBindVertexArray( vao );
 
-	glEnableVertexAttribArray( 0 );
-	glVertexAttribPointer(
-	    /*location*/ 0, /*num elements*/ 2, /*base type*/ GL_FLOAT, /*normalized*/ GL_FALSE,
-	    Vertex.sizeof, cast(void*) Vertex.position.offsetof
-	);
-	glEnableVertexAttribArray( 1 );
-	glVertexAttribPointer(
-	    /*location*/ 1, /*num elements*/ 3, /*base type*/ GL_FLOAT, /*normalized*/ GL_FALSE,
-	    Vertex.sizeof, cast(void*) Vertex.color.offsetof
-	);
+		glEnableVertexAttribArray( 0 );
+		glVertexAttribPointer(
+		    /*location*/ 0, /*num elements*/ 2, /*base type*/ GL_FLOAT, /*normalized*/ GL_FALSE,
+		    Vertex.sizeof, cast(void*) Vertex.position.offsetof
+		);
+		glEnableVertexAttribArray( 1 );
+		glVertexAttribPointer(
+		    /*location*/ 1, /*num elements*/ 3, /*base type*/ GL_FLOAT, /*normalized*/ GL_FALSE,
+		    Vertex.sizeof, cast(void*) Vertex.color.offsetof
+		);
     }
 
     nothrow @nogc

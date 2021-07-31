@@ -60,21 +60,21 @@ struct CSSValue
 
 
     // Setters
-    CSSValue opAssign( POS a        ) { type = CSSValueType.Pos;        pos       = a; return this; }
-    CSSValue opAssign( Length a     ) { type = CSSValueType.Length;     length    = a; return this; }
-    CSSValue opAssign( Percent a    ) { type = CSSValueType.Percent;    percent   = a; return this; }
-    CSSValue opAssign( LineStyle a  ) { type = CSSValueType.LineStyle;  lineStyle = a; return this; }
-    CSSValue opAssign( Color a      ) { type = CSSValueType.Color;      color     = a; return this; }
-    CSSValue opAssign( Display a    ) { type = CSSValueType.Display;    display   = a; return this; }
-    CSSValue opAssign( MinContent a ) { type = CSSValueType.MinContent;                return this; }
-    CSSValue opAssign( MaxContent a ) { type = CSSValueType.MaxContent;                return this; }
-    CSSValue opAssign( FitContent a ) { type = CSSValueType.FitContent;                return this; }
-    CSSValue opAssign( Hidden a     ) { type = CSSValueType.Hidden;     hidden    = a; return this; }
+    ref CSSValue opAssign( POS a        ) return { type = CSSValueType.Pos;        pos       = a; return this; }
+    ref CSSValue opAssign( Length a     ) return { type = CSSValueType.Length;     length    = a; return this; }
+    ref CSSValue opAssign( Percent a    ) return { type = CSSValueType.Percent;    percent   = a; return this; }
+    ref CSSValue opAssign( LineStyle a  ) return { type = CSSValueType.LineStyle;  lineStyle = a; return this; }
+    ref CSSValue opAssign( Color a      ) return { type = CSSValueType.Color;      color     = a; return this; }
+    ref CSSValue opAssign( Display a    ) return { type = CSSValueType.Display;    display   = a; return this; }
+    ref CSSValue opAssign( MinContent a ) return { type = CSSValueType.MinContent;                return this; }
+    ref CSSValue opAssign( MaxContent a ) return { type = CSSValueType.MaxContent;                return this; }
+    ref CSSValue opAssign( FitContent a ) return { type = CSSValueType.FitContent;                return this; }
+    ref CSSValue opAssign( Hidden a     ) return { type = CSSValueType.Hidden;     hidden    = a; return this; }
 
-    CSSValue opAssign( Auto a       ) { type = CSSValueType.Auto;     return this; }
-    CSSValue opAssign( Initial a    ) { type = CSSValueType.Initial;  return this; }
-    CSSValue opAssign( Revert a     ) { type = CSSValueType.Revert;   return this; }
-    CSSValue opAssign( Unset a      ) { type = CSSValueType.Unset;    return this; }
+    ref CSSValue opAssign( Auto a       ) return { type = CSSValueType.Auto;     return this; }
+    ref CSSValue opAssign( Initial a    ) return { type = CSSValueType.Initial;  return this; }
+    ref CSSValue opAssign( Revert a     ) return { type = CSSValueType.Revert;   return this; }
+    ref CSSValue opAssign( Unset a      ) return { type = CSSValueType.Unset;    return this; }
 }
 
 

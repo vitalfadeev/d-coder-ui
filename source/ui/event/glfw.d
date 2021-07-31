@@ -1,7 +1,7 @@
 module ui.event.glfw;
 
 version( GLFW ):
-import glfw3.api;
+import bindbc.glfw;
 import ui.window : Window;
 
 
