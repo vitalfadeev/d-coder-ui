@@ -12,12 +12,15 @@ import std.math         : floor;
 import std.math         : log;
 import std.math         : pow;
 import core.stdc.stdlib : alloca;
+import core.stdc.stdlib : malloc;
 import core.stdc.stdio  : printf;
 import bc.string.string : tempCString;
-import ui.vectorcpp     : VectorCPP;
 import ui.stackarray    : StackArray;
 import gl;
 import gl               : MyMesh;
+
+
+FontCache fontCache;
 
 
 alias FeaturesArray = StackArray!( hb_feature_t, 6 );
@@ -28,6 +31,7 @@ struct HBShaper
     hb_font_t*    font;
     hb_buffer_t*  buffer;
     FeaturesArray features;
+    string        fontFile;
     int           fontSize;
 
     @disable this();
@@ -35,8 +39,10 @@ struct HBShaper
     nothrow @nogc
     this( string fontFile, int fontSize ) 
     {
+        this.fontFile = fontFile;
         this.fontSize = fontSize;
-        loadFace( fontFile, fontSize * 64, 72, 72, &face );
+        int deviceHDPI = 96; // defauls: Linux: 96, Windows:96, MacL: 72
+        loadFace( fontFile, fontSize * 64, deviceHDPI, deviceHDPI, &face );
 
         font   = hb_ft_font_create( face, null );
         buffer = hb_buffer_create();
@@ -81,38 +87,55 @@ struct HBShaper
         hb_glyph_position_t* glyphPos  = hb_buffer_get_glyph_positions( buffer, &glyphCount );
 
         //
-        Glyph glyph;
+        Glyph* glyphPtr;
+        ubyte* tdata;
 
         for ( int i = 0; i < glyphCount; ++i )
         {
-            deps.freetype.rasterize( face, glyphInfo[i].codepoint, &glyph );
+            // look in cache
+            auto glyphIndex  = glyphInfo[i].codepoint;
+            auto cachedGlyph = fontCache.get( fontFile, fontSize, glyphIndex );
 
-            // 2^N aligned
-            int twidth  = cast( int ) ( pow( 2, ceil( log( glyph.width  ) / log( 2 ) ) ) );
-            int theight = cast( int ) ( pow( 2, ceil( log( glyph.height ) / log( 2 ) ) ) );
-
-            // buffer for transfer to texture. alligned to 2^N
-            ubyte* tdata = cast( ubyte* ) alloca( twidth * theight );
-
-            for ( int iy = glyph.height; iy >= 0; iy-- ) 
+            if ( cachedGlyph !is null )
             {
-                // y inverted
-                memcpy( tdata + iy * twidth, glyph.buffer + iy * glyph.width, glyph.width );
+                // from cache
+                glyphPtr = cachedGlyph;
+            }
+            else
+            {
+                // no in cache. put
+                glyphPtr = fontCache.createRec( fontFile, fontSize, glyphIndex );
+                deps.freetype.rasterize( face, glyphIndex, glyphPtr );
+
+                // 2^N aligned
+                glyphPtr.twidth  = cast( int ) ( pow( 2, ceil( log( glyphPtr.width  ) / log( 2 ) ) ) );
+                glyphPtr.theight = cast( int ) ( pow( 2, ceil( log( glyphPtr.height ) / log( 2 ) ) ) );
+
+                // buffer for transfer to texture. alligned to 2^N
+                tdata = cast( ubyte* ) alloca( glyphPtr.twidth * glyphPtr.theight );
+
+                for ( int iy = glyphPtr.height; iy >= 0; iy-- ) 
+                {
+                    memcpy( tdata + iy * glyphPtr.twidth, glyphPtr.buffer + iy * glyphPtr.width, glyphPtr.width );
+                }
+
+                //
+                glyphPtr.buffer = tdata;
             }
 
             //
             float s0 = 0.0;
             float t0 = 0.0;
-            float s1 = cast( float ) glyph.width  / twidth;  // -1.0 .. 1.0
-            float t1 = cast( float ) glyph.height / theight; // -1.0 .. 1.0
+            float s1 = cast( float ) glyphPtr.width  / glyphPtr.twidth;  // -1.0 .. 1.0
+            float t1 = cast( float ) glyphPtr.height / glyphPtr.theight; // -1.0 .. 1.0
             float xa = cast( float ) glyphPos[i].x_advance / 64;
             float ya = cast( float ) glyphPos[i].y_advance / 64;
             float xo = cast( float ) glyphPos[i].x_offset / 64;
             float yo = cast( float ) glyphPos[i].y_offset / 64;
-            float x0 = windowedX + xo + glyph.bearing_x;
-            float y0 = floor( windowedY + yo + glyph.bearing_y );
-            float x1 = x0 + glyph.width;
-            float y1 = floor( y0 - glyph.height );
+            float x0 = windowedX + xo + glyphPtr.bearing_x;
+            float y0 = floor( windowedY + yo + glyphPtr.bearing_y );
+            float x1 = x0 + glyphPtr.width;
+            float y1 = floor( y0 - glyphPtr.height );
 
             // flip Y axe
             auto tmpY = y0;
@@ -154,7 +177,7 @@ struct HBShaper
             ];
 
             // don't do this!! use atlas texture instead
-            gl.uploadTexture( twidth, theight, tdata, &m.textureId );
+            gl.uploadTexture( glyphPtr.twidth, glyphPtr.theight, tdata, &m.textureId );
 
             //printf( "tex: %d\n", m.textureId );
             //printf( "x0, y0: %f, %f\n", x0, y0 );
@@ -187,3 +210,106 @@ struct HBText
     hb_script_t    script;
     hb_direction_t direction;
 }
+
+
+struct FontCache
+{
+    ByFontNameCacheRec* byFontName;
+
+    nothrow @nogc:
+    Glyph* get( string fontName, uint fontSize, uint glyphIndex )
+    {
+        if ( byFontName is null )
+        {
+            // empty cache. add new record
+        }
+        else
+        {
+            auto byFontNameCacheRec = getByFontName( fontName, byFontName );
+            if ( byFontNameCacheRec !is null )
+            {
+                auto byFontSizeCacheRec = getByFontSize( fontSize, byFontNameCacheRec.byFontSize );
+                if ( byFontSizeCacheRec !is null )
+                {
+                    auto byGlyphIndexCacheRec = getByGlyphIndex( fontSize, byFontSizeCacheRec.byGlyphIndex );
+                    if ( byGlyphIndexCacheRec !is null )
+                    {
+                        return &byGlyphIndexCacheRec.glyph;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+
+    Glyph* createRec( string fontName, uint fontSize, uint glyphIndex )
+    {
+        return cast( Glyph* ) malloc( Glyph.sizeof );
+    }
+
+
+    auto getByFontName( string fontName, ByFontNameCacheRec* first )
+    {
+        for ( auto cur = first; cur !is null; cur = cur.next )
+        {
+            if ( cur.fontName == fontName )
+            {
+                return cur;
+            }
+        }
+
+        return null;
+    }
+
+
+    auto getByFontSize( uint fontSize, ByFontSizeCacheRec* first )
+    {
+        for ( auto cur = first; cur !is null; cur = cur.next )
+        {
+            if ( cur.fontSize == fontSize )
+            {
+                return cur;
+            }
+        }
+
+        return null;
+    }
+
+
+    auto getByGlyphIndex( uint glyphIndex, ByGlyphIndexCacheRec* first )
+    {
+        for ( auto cur = first; cur !is null; cur = cur.next )
+        {
+            if ( cur.glyphIndex == glyphIndex )
+            {
+                return cur;
+            }
+        }
+
+        return null;
+    }
+
+    struct ByFontNameCacheRec
+    {
+        string              fontName;
+        ByFontSizeCacheRec* byFontSize;
+        ByFontNameCacheRec* next;
+    }
+
+    struct ByFontSizeCacheRec
+    {
+        uint                  fontSize;
+        ByGlyphIndexCacheRec* byGlyphIndex;
+        ByFontSizeCacheRec*   next;
+    }
+
+    struct ByGlyphIndexCacheRec
+    {
+        uint                  glyphIndex;
+        ByGlyphIndexCacheRec* next;
+        Glyph                 glyph;
+    }
+}
+

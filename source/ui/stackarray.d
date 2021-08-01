@@ -1,7 +1,5 @@
 module ui.stackarray;
 
-import std.container.array;
-
 
 /**
  * Stack allocated array
@@ -15,12 +13,12 @@ struct StackArray( T, alias N )
 nothrow @nogc:
     typeof( this ) opOpAssign( string op : "~" )( T b )
     {
-        version ( DEBUG )
+        version ( D_BetterC ) {} else
         {
             // range check
             if ( length > N )
             {
-                assert( 0, "error: array length > " ~ N.stringof );
+//                assert( 0, "error: array length > " ~ N.stringof );
             }
         }
 
@@ -39,12 +37,12 @@ nothrow @nogc:
 
     T* createOne()
     {
-        version ( DEBUG )
+        version ( D_BetterC ) {} else
         {
             // range check
             if ( length > N )
             {
-                assert( 0, "error: array length > " ~ N.stringof );
+//                assert( 0, "error: array length > " ~ N.stringof );
             }
         }
 

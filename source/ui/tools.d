@@ -39,7 +39,7 @@ auto To( TYPE, VAR )( VAR var ) nothrow
 template staticCat(T...)
 if (T.length)
 {
-    import std.array;
+//    import std.array;
     enum staticCat = [T].join();
 }
 
@@ -134,7 +134,7 @@ unittest
 */
 string baseName( ClassInfo classinfo ) 
 {
-    import std.array;
+//    import std.array;
     import std.algorithm : countUntil;
     import std.range : retro;
 
@@ -153,7 +153,7 @@ string baseName( ClassInfo classinfo )
 
 string moduleName( ClassInfo classinfo ) 
 {
-    import std.array;
+//    import std.array;
     import std.algorithm : countUntil;
     import std.range : retro;
 

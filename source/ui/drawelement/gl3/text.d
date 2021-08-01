@@ -19,7 +19,7 @@ void drawText( string text )
 {
     glViewport( 0, 0, 800, 600 ); checkGlError( "glViewport" );
 
-    auto latinShaper   = HBShaper( "fonts/DejaVuSerif.ttf", 50 );
+    auto latinShaper   = HBShaper( "fonts/DejaVuSerif.ttf", 48 );
     //auto arabicShaper  = HBShaper( "fonts/amiri-regular.ttf", 50 );
     //auto russianShaper = HBShaper( "fonts/DejaVuSerif.ttf", 50 );
     //auto hanShaper     = HBShaper( "fonts/fireflysung.ttf", 50 );

@@ -1,8 +1,7 @@
 module ui.shaders.image;
 
 version( GL3 ):
-import bindbc.opengl;
-import bindbc.opengl.bind.types;
+import deps.gl3;
 import ui.shaders.shader : Shader;
 
 

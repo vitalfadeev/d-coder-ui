@@ -1,6 +1,7 @@
 module ui.event.eventtypes.gdi;
 
-version ( Windows ):
+version ( Windows )
+{
 import core.sys.windows.winuser;
 import std.string : startsWith;
 import std.format : format;
@@ -14,4 +15,5 @@ foreach ( m; __traits( allMembers, core.sys.windows.winuser ) )
         //pragma( msg, m );
         mixin( format!"public import core.sys.windows.winuser : %s;"( m ) );
     }
+}
 }

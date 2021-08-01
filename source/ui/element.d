@@ -1064,9 +1064,9 @@ version ( ClassList2 )
     /** */
     void dump( int level = 0 )
     {
-        import std.array : replicate;
+//        import std.array : replicate;
 
-        writeln( " ".replicate( level ), &this, ": ", firstChild );
+        writeln( " ", &this, ": ", firstChild );
 
         // childs
         if ( firstChild !is null )

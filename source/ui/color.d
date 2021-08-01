@@ -5,9 +5,6 @@ import core.sys.windows.windows : COLORREF;
 version (windows)
 import core.sys.windows.windows : RGB;
 
-import std.format               : format;
-import std.stdio                : writefln;
-
 
 /** */
 struct Color
@@ -57,7 +54,7 @@ version (windows)
 
 
 version ( GL3 )
-    import bindbc.opengl.bind.types : GLfloat;
+    import deps.gl3 : GLfloat;
 version ( GL3 )
     nothrow @nogc
     GLfloat[3] glColor()
@@ -71,16 +68,16 @@ version ( GL3 )
     }
 
 
-    string toString()
-    {
-        return format!"Color( 0x%x%x%x )"( r, g, b );
-    }
+    //string toString()
+    //{
+    //    return format!"Color( 0x%x%x%x )"( r, g, b );
+    //}
 
 
-    string asHex()
-    {
-        return format!"0x%x%x%x"( r, g, b );
-    }
+    //string asHex()
+    //{
+    //    return format!"0x%x%x%x"( r, g, b );
+    //}
 }
 
 
@@ -135,7 +132,7 @@ Color argb( uint x )
         );
 }
 
-
+/*
 ///
 unittest
 {
@@ -171,4 +168,4 @@ unittest
     assert( color.windowsCOLORREF == RGB( 0xAA, 0xBB, 0xCC ) );
     assert( !color.isTransparent );
 }
-
+*/

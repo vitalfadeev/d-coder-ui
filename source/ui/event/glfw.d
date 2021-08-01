@@ -1,7 +1,7 @@
 module ui.event.glfw;
 
 version( GLFW ):
-import bindbc.glfw;
+import deps.glfw;
 import ui.window : Window;
 
 
@@ -27,10 +27,9 @@ struct Event
         KeyboardKeyEvent keyboard;
     }
 
-    auto name()
+    string name()
     {
-        import std.conv : to;
-        return type.to!string;
+        return type.stringof;
     }
 
     auto arg1()

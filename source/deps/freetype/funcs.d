@@ -9,11 +9,16 @@ import deps.freetype    : ft;
 
 struct Glyph
 {
+    // FreeType Glyph
     ubyte* buffer;
     uint   width;
     uint   height;
     float  bearing_x;
     float  bearing_y;
+    // GL texture
+    int    twidth;
+    int    theight;
+    uint   textureId;
 }
 
 

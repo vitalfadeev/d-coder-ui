@@ -2,25 +2,18 @@ module ui.drawelement.gl3.image;
 
 
 version ( GL3 ):
-import bindbc.opengl.bind.types;
-import bindbc.opengl;
+import deps.gl3;
 import core.stdc.stdio  : printf;
 import core.stdc.stdlib : exit;
 import core.stdc.stdio  : sscanf;
 import ui.color;
-import dlib;
 import bc.string.string : tempCString;
 import std.math : ceil;
 import std.math : floor;
 import std.math : log;
 import std.math : pow;
-import core.math : rndtol;
-import core.stdc.stdlib : alloca;
-import std.typecons : RefCounted, RefCountedAutoInitialize;
-import ui.vectorcpp : VectorCPP;
-import ui.shaders.shader : Shader;
 version ( FreeImage )
-import bindbc.freeimage;
+import deps.freeimage;
 import ui.shaders : imageShader;
 import ui.shaders : linearShader;
 import gl : checkGlError;

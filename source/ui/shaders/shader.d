@@ -1,9 +1,7 @@
 module ui.shaders.shader;
 
 version( GL3 ):
-import bindbc.opengl;
-import bindbc.opengl.bind.types;
-import std.container.array;
+import deps.gl3;
 import core.stdc.stdlib : alloca;
 import core.stdc.stdio  : printf;
 import core.stdc.stdio  : fprintf;
